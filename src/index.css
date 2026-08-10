@@ -1,0 +1,42 @@
+/*
+  Minimal global reset. Page-level styling lives with each page — this file only
+  removes browser defaults that would otherwise break a full-bleed layout.
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+
+  /* Set here too, so there is no white flash before a page's own background
+     paints. */
+  background-color: #040404;
+}
+
+/* Anchor links in the header glide rather than jump. */
+html {
+  scroll-behavior: smooth;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

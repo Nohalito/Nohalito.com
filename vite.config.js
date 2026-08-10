@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base: '/Nohalito.com/',
   server: {
     watch: {
       // Running the Vite dev server from WSL against a project stored on the

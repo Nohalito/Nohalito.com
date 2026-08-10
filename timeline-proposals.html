@@ -1,0 +1,489 @@
+<title>Timeline proposals — Noa Boimond</title>
+<style>
+  :root {
+    --bg: #040404;
+    --panel: #0d0d0d;
+    --panel-2: #131316;
+    --text: #f1f1f1;
+    --muted: #8f8f93;
+    --line: #242426;
+    --purple: #8b5cf6;
+    --purple-dim: rgba(139, 92, 246, 0.18);
+    --blue: #49c9ff;
+    --blue-dim: rgba(73, 201, 255, 0.18);
+
+    --font-serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+    --font-sans: 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+
+  /*
+    Deliberately dark-only: this previews components for Nohalito.com, whose
+    body is permanently #040404 (see Home.css) with no light variant. A light
+    preview here would misrepresent how these actually look on the real site.
+  */
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 64px 24px 96px;
+  }
+
+  h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; color: var(--text); text-wrap: balance; }
+
+  .eyebrow {
+    margin: 0 0 10px;
+    color: var(--purple);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .intro h1 { font-size: clamp(26px, 4vw, 32px); margin: 0 0 14px; }
+  .intro .lede { max-width: 62ch; color: var(--muted); font-size: 15px; margin: 0 0 18px; }
+
+  .note {
+    max-width: 62ch;
+    padding: 10px 14px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+  .note strong { color: var(--text); }
+
+  .legend-key {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 16px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .legend-swatch--edu { background: var(--purple); }
+  .legend-swatch--work { background: var(--blue); }
+  .legend-row { margin: 22px 0 0; }
+
+  /* ---------- shared option chrome ---------- */
+
+  .option {
+    margin-top: 56px;
+    padding: 28px clamp(20px, 4vw, 32px) 32px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+
+  .option__index { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--purple); margin: 0 0 8px; }
+  .option__title { font-size: 21px; margin: 0 0 8px; }
+  .option__pitch { color: var(--muted); font-size: 13.5px; max-width: 60ch; margin: 0 0 26px; }
+
+  .scroller { overflow-x: auto; padding-bottom: 4px; }
+  .scroller::-webkit-scrollbar { height: 8px; }
+  .scroller::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+
+  time, .tabular { font-variant-numeric: tabular-nums; }
+
+  /* =====================================================================
+     Option 1 — proportional Gantt / swimlane chart
+     ===================================================================== */
+
+  .gantt { min-width: 640px; }
+
+  .gantt__milestone-row {
+    position: relative;
+    height: 46px;
+    margin-left: 168px;
+  }
+  .gantt__diamond {
+    position: absolute;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    background: var(--muted);
+    border: 1px solid var(--text);
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  .gantt__diamond-label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: calc(var(--x) + 10px);
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .gantt__diamond-label strong { color: var(--text); font-weight: 400; }
+
+  .gantt__axis {
+    position: relative;
+    height: 20px;
+    margin-left: 168px;
+    border-bottom: 1px solid var(--line);
+  }
+  .gantt__gridline {
+    position: absolute;
+    top: 0;
+    bottom: -560px;
+    width: 1px;
+    background: var(--line);
+  }
+  .gantt__gridyear {
+    position: absolute;
+    bottom: 4px;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .gantt__lane {
+    display: grid;
+    grid-template-columns: 168px 1fr;
+    column-gap: 12px;
+    align-items: center;
+    min-height: 52px;
+    border-top: 1px solid var(--line);
+  }
+  .gantt__lane-label {
+    text-align: right;
+    color: var(--muted);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+  .gantt__track { position: relative; height: 100%; }
+  .gantt__bar {
+    position: absolute;
+    top: 50%;
+    height: 18px;
+    transform: translateY(-50%);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--bg);
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0 6px;
+  }
+  .gantt__bar--edu { background: var(--purple); }
+  .gantt__bar--work {
+    background: var(--blue);
+    color: var(--bg);
+    font-weight: 600;
+    justify-content: center;
+  }
+
+  .gantt__legend {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 24px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .gantt__legend b { color: var(--text); display: inline-block; width: 1.4em; }
+
+  /* =====================================================================
+     Option 2 — editorial list
+     ===================================================================== */
+
+  .edit-list h3 {
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--muted);
+    margin: 28px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .edit-list h3:first-child { margin-top: 0; }
+
+  .edit-row { display: flex; gap: 18px; padding: 10px 0; }
+  .edit-row__date {
+    flex: none;
+    width: 108px;
+    color: var(--muted);
+    font-size: 13px;
+    padding-top: 1px;
+  }
+  .edit-row__title { color: var(--text); font-size: 15px; }
+  .edit-row__sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .edit-row__desc { color: var(--muted); font-size: 12.5px; line-height: 1.55; margin-top: 4px; max-width: 56ch; }
+
+  .edit-row__tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag {
+    font-size: 10.5px;
+    letter-spacing: 0.03em;
+    padding: 3px 9px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    background: var(--panel-2);
+  }
+
+  .edit-group {
+    margin: 4px 0 6px;
+    padding-left: 18px;
+    border-left: 2px solid var(--purple);
+  }
+  .edit-group__tag {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 4px;
+  }
+  .edit-group__desc { color: var(--muted); font-size: 12.5px; line-height: 1.55; margin: 0 0 12px; max-width: 56ch; }
+
+  @media (max-width: 620px) {
+    .option { padding: 22px 16px 26px; }
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="intro">
+    <p class="eyebrow">Timeline proposals · Noa Boimond</p>
+    <h1>Two ways to show six years that don't run in a straight line</h1>
+    <p class="lede">
+      The raw shape: a Baccalauréat, a prépa run alongside one bachelor's, a
+      switch into a second bachelor's to join the Magistère, a dual master's
+      abroad, and four jobs dropped in on top of all of it. Below are two
+      treatments for that shape, built with your actual dates.
+    </p>
+    <p class="note">
+      Rendered dark-only on purpose: the live site's background is fixed at
+      <strong>#040404</strong> with no light mode (see <strong>Home.css</strong>),
+      so a light preview here would show you something you'd never actually see.
+    </p>
+    <p class="legend-row">
+      <span class="legend-key"><span class="legend-swatch legend-swatch--edu"></span>Education / Magistère</span>
+      <span class="legend-key"><span class="legend-swatch legend-swatch--work"></span>Experience</span>
+    </p>
+  </div>
+
+  <!-- ============================= OPTION 1 ============================= -->
+  <section class="option">
+    <p class="option__index">Option 1</p>
+    <h2 class="option__title">Proportional timeline (Gantt-style)</h2>
+    <p class="option__pitch">
+      One lane per track, bars sized to real duration on a shared year axis.
+      The most literal answer to "many overlapping formations" — you can see
+      exactly how far the internships cut into the Magistère. Widest option;
+      scrolls horizontally on a phone.
+    </p>
+
+    <div class="scroller">
+      <div class="gantt">
+        <div class="gantt__milestone-row">
+          <div class="gantt__diamond" style="--x: 4.4%; left: var(--x);"></div>
+          <div class="gantt__diamond-label" style="--x: 4.4%;"><strong>Baccalauréat</strong> — 2021</div>
+        </div>
+
+        <div class="gantt__axis">
+          <div class="gantt__gridline" style="left: 12.3%;"></div>
+          <div class="gantt__gridyear" style="left: 12.3%;">2022</div>
+          <div class="gantt__gridline" style="left: 29.8%;"></div>
+          <div class="gantt__gridyear" style="left: 29.8%;">2023</div>
+          <div class="gantt__gridline" style="left: 47.4%;"></div>
+          <div class="gantt__gridyear" style="left: 47.4%;">2024</div>
+          <div class="gantt__gridline" style="left: 64.9%;"></div>
+          <div class="gantt__gridyear" style="left: 64.9%;">2025</div>
+          <div class="gantt__gridline" style="left: 82.5%;"></div>
+          <div class="gantt__gridyear" style="left: 82.5%;">2026</div>
+        </div>
+
+        <div class="gantt__lane">
+          <div class="gantt__lane-label">Pre-Magistère</div>
+          <div class="gantt__track">
+            <div class="gantt__bar gantt__bar--edu" style="left: 6.5%; width: 32.1%;">Prépa + Bachelor</div>
+          </div>
+        </div>
+
+        <div class="gantt__lane">
+          <div class="gantt__lane-label">Magistère</div>
+          <div class="gantt__track">
+            <div class="gantt__bar gantt__bar--edu" style="left: 41.6%; width: 49.6%; background: var(--purple-dim); color: var(--text); border: 1px solid var(--purple);">Magistère in Economic Engineering</div>
+          </div>
+        </div>
+
+        <div class="gantt__lane">
+          <div class="gantt__lane-label">Degree track</div>
+          <div class="gantt__track">
+            <div class="gantt__bar gantt__bar--edu" style="left: 41.6%; width: 14.5%;">MIASHS</div>
+            <div class="gantt__bar gantt__bar--edu" style="left: 59.1%; width: 14.6%;">M1 · Venice</div>
+            <div class="gantt__bar gantt__bar--edu" style="left: 76.7%; width: 14.5%;">M2 · Aix</div>
+          </div>
+        </div>
+
+        <div class="gantt__lane">
+          <div class="gantt__lane-label">Experience</div>
+          <div class="gantt__track">
+            <div class="gantt__bar gantt__bar--work" style="left: 40.0%; width: 1.6%; min-width: 20px;"><b>A</b></div>
+            <div class="gantt__bar gantt__bar--work" style="left: 53.2%; width: 4.3%; min-width: 20px;"><b>B</b></div>
+            <div class="gantt__bar gantt__bar--work" style="left: 72.3%; width: 4.4%; min-width: 20px;"><b>C</b></div>
+            <div class="gantt__bar gantt__bar--work" style="left: 86.8%; width: 10.2%;"><b>D</b></div>
+          </div>
+        </div>
+
+        <div class="gantt__legend">
+          <div><b>A</b> Customer Service Assistant — Caisse d'Épargne Rhône-Alpes — Aug 2023</div>
+          <div><b>B</b> Data Analyst (intern) — Alinéa, Aubagne — May–Jul 2024</div>
+          <div><b>C</b> Industry 4.0 Engineer & Data Analyst (intern) — Alfa Laval Vicarb — Jun–Aug 2025</div>
+          <div><b>D</b> Data Engineer (intern) — Equancy | EDG Group — Apr–Oct 2026</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= OPTION 2 ============================= -->
+  <section class="option">
+    <p class="option__index">Option 2</p>
+    <h2 class="option__title">Editorial list</h2>
+    <p class="option__pitch">
+      A styled, nested list in the same voice as the rest of the site (same
+      serif/sans pairing as <strong>AboutSection</strong>). Each entry can now
+      carry a short description and skill tags — the copy below is
+      illustrative, swap it for the real wording when this goes live.
+    </p>
+
+    <div class="edit-list">
+      <h3>Education</h3>
+
+      <div class="edit-row">
+        <div class="edit-row__date tabular">2021</div>
+        <div>
+          <div class="edit-row__title">Baccalauréat</div>
+          <div class="edit-row__desc">TODO — short description (track/specialty, or drop this line).</div>
+        </div>
+      </div>
+
+      <div class="edit-row">
+        <div class="edit-row__date tabular">2021–2023</div>
+        <div>
+          <div class="edit-row__title">Preparatory class, ENS Cachan D2 (Economics)</div>
+          <div class="edit-row__sub">With a Bachelor's in Economics &amp; Management, left before its final year.</div>
+          <div class="edit-row__desc">Intensive two-year track preparing the ENS/ENSAI entrance exams: economics, mathematics and quantitative methods.</div>
+          <div class="edit-row__tags">
+            <span class="tag">Economics</span>
+            <span class="tag">Mathematics</span>
+            <span class="tag">Statistics</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="edit-group">
+        <div class="edit-group__tag">Magistère in Economic Engineering — 2023–2026</div>
+        <div class="edit-group__desc">Three-year selective program layered on top of the three degrees below, combining economics with data science and programming.</div>
+
+        <div class="edit-row">
+          <div class="edit-row__date tabular">2023–2024</div>
+          <div>
+            <div class="edit-row__title">Bachelor's (Licence), MIASHS — 3rd year</div>
+            <div class="edit-row__desc">Human & social sciences applied to data: statistics, econometrics and an introduction to programming.</div>
+            <div class="edit-row__tags">
+              <span class="tag">Econometrics</span>
+              <span class="tag">Python</span>
+              <span class="tag">SQL</span>
+            </div>
+          </div>
+        </div>
+        <div class="edit-row">
+          <div class="edit-row__date tabular">2024–2025</div>
+          <div>
+            <div class="edit-row__title">Master 1, Data Analytics for Business &amp; Society</div>
+            <div class="edit-row__sub">Ca' Foscari University of Venice, Italy</div>
+            <div class="edit-row__desc">First year of a dual degree abroad, focused on applying data analytics to business and policy questions.</div>
+            <div class="edit-row__tags">
+              <span class="tag">Data Analysis</span>
+              <span class="tag">R</span>
+              <span class="tag">Business Analytics</span>
+            </div>
+          </div>
+        </div>
+        <div class="edit-row">
+          <div class="edit-row__date tabular">2025–2026</div>
+          <div>
+            <div class="edit-row__title">Master 2, Econometrics &amp; Data Science</div>
+            <div class="edit-row__sub">Aix-Marseille University, France</div>
+            <div class="edit-row__desc">Second year of the dual degree, back in France: advanced econometrics and machine learning methods.</div>
+            <div class="edit-row__tags">
+              <span class="tag">Machine Learning</span>
+              <span class="tag">Econometrics</span>
+              <span class="tag">Python</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Experience</h3>
+
+      <div class="edit-row">
+        <div class="edit-row__date tabular">Apr–Oct 2026</div>
+        <div>
+          <div class="edit-row__title">Data Engineer (intern) — Equancy | EDG Group, Paris</div>
+          <div class="edit-row__desc">TODO — short description of the mission (pipelines, cloud infra, or whatever it ends up covering).</div>
+          <div class="edit-row__tags">
+            <span class="tag">GCP</span>
+            <span class="tag">Terraform</span>
+            <span class="tag">Python</span>
+          </div>
+        </div>
+      </div>
+      <div class="edit-row">
+        <div class="edit-row__date tabular">Jun–Aug 2025</div>
+        <div>
+          <div class="edit-row__title">Industry 4.0 Engineer &amp; Data Analyst (intern) — Alfa Laval Vicarb, Fontanil</div>
+          <div class="edit-row__desc">TODO — short description (production data, dashboards, process monitoring, etc.).</div>
+          <div class="edit-row__tags">
+            <span class="tag">SQL</span>
+            <span class="tag">Power BI</span>
+            <span class="tag">Process Analysis</span>
+          </div>
+        </div>
+      </div>
+      <div class="edit-row">
+        <div class="edit-row__date tabular">May–Jul 2024</div>
+        <div>
+          <div class="edit-row__title">Data Analyst (intern) — Alinéa, Aubagne</div>
+          <div class="edit-row__desc">TODO — short description (reporting, retail data, etc.).</div>
+          <div class="edit-row__tags">
+            <span class="tag">Excel</span>
+            <span class="tag">SQL</span>
+            <span class="tag">Reporting</span>
+          </div>
+        </div>
+      </div>
+      <div class="edit-row">
+        <div class="edit-row__date tabular">Aug 2023</div>
+        <div>
+          <div class="edit-row__title">Customer Service Assistant — Caisse d'Épargne Rhône-Alpes, Saint-Égrève</div>
+          <div class="edit-row__desc">TODO — short description (front-desk client service, cash handling, etc.).</div>
+          <div class="edit-row__tags">
+            <span class="tag">Client Relations</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

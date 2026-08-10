@@ -1,0 +1,100 @@
+/*
+  Home page — design tokens and shared typography.
+
+  Tokens are declared on `.home` rather than `:root` so the palette travels with
+  the page: the other routes (the black hole test page, the mini-apps) are free
+  to define their own without a fight. Custom properties inherit, so every
+  component rendered inside `.home` picks these up.
+
+  Palette and type are the merged direction agreed from the round-3 mockups:
+  Singularity Pulse's structure and restraint, Event Horizon's serif for
+  titles, Cerenkov Drift's blue halo on the portrait.
+*/
+.home {
+  --bg: #040404;
+  --panel: #0d0d0d;
+  --text: #f1f1f1;
+  --muted: #8f8f93;
+  --line: #222224;
+
+  /* Purple carries the small type; blue is reserved entirely for the halo. */
+  --purple: #8b5cf6;
+  --blue: #49c9ff;
+
+  --font-serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+  --font-sans: 'Segoe UI', Helvetica, Arial, sans-serif;
+
+  position: relative;
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--text);
+
+  /* Sans for everything by default; the serif is opted into, below. */
+  font-family: var(--font-sans);
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* Lifts the content above the fixed background layer. */
+.home__content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- typography ---------- */
+
+/*
+  Serif titles over light sans body. Only the wordmark, the name and the
+  section headings take the serif — nav, dates, labels and body copy all stay
+  sans, which keeps the contrast between the two deliberate rather than noisy.
+*/
+.home h1,
+.home h2 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--text);
+}
+
+.home h1 {
+  font-size: clamp(26px, 5vw, 32px);
+}
+
+.home h2 {
+  margin: 0 0 12px;
+  font-size: clamp(20px, 4vw, 24px);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.home p {
+  margin: 0 0 10px;
+  color: var(--muted);
+  /* rem, not px: ties body copy to the root font size, so it also respects a
+     browser "default font size" accessibility setting, not only page zoom. */
+  font-size: 1rem;
+}
+
+/* ---------- shared utilities ---------- */
+
+/*
+  Visible to screen readers, invisible on screen. Used for the footer link
+  labels, whose icons are decorative and carry no accessible name of their own.
+*/
+.home .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip-path: inset(50%);
+}
+
+/* Keyboard focus must stay visible against a dark, moving background. */
+.home a:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 3px;
+  border-radius: 2px;
+}

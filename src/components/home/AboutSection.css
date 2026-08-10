@@ -1,0 +1,56 @@
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--purple);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.about__name {
+  margin: 0 0 -5px;
+}
+
+.tagline {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 28px;
+  left: clamp(28px, 6vw, 56px);
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  pointer-events: none;
+
+  animation: scroll-hint-bounce 2s ease-in-out infinite;
+}
+
+.scroll-hint svg {
+  width: 12px;
+  height: 12px;
+}
+
+@keyframes scroll-hint-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint {
+    animation: none;
+  }
+}

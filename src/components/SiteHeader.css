@@ -1,0 +1,76 @@
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px clamp(24px, 5vw, 44px);
+
+  background: rgba(4, 4, 4, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.site-header__brand {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  flex: none;
+}
+
+.site-header__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.navlink {
+  position: relative;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.navlink.is-active {
+  color: #fff;
+}
+
+.navlink:hover {
+  color: var(--text);
+}
+
+/* Underline that wipes in from the left on hover, and stays for the active link. */
+.navlink::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: -4px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.85;
+  transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navlink:hover::after,
+.navlink:focus-visible::after,
+.navlink.is-active::after {
+  right: 0;
+}
+
+@media (max-width: 560px) {
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

@@ -1,0 +1,29 @@
+.experience-item {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.experience-item__period {
+  flex: none;
+  width: 96px;
+  color: var(--purple);
+  font-size: 12px;
+}
+
+.experience-item__role {
+  color: var(--text);
+}
+
+@media (max-width: 480px) {
+  .experience-item {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .experience-item__period {
+    width: auto;
+  }
+}

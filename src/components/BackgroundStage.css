@@ -1,0 +1,30 @@
+.background-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+
+  /* Decorative only — clicks belong to the content above. */
+  pointer-events: none;
+
+  /* Last line of defence: even with both layers gone, the page is never white. */
+  background-color: var(--bg, #040404);
+}
+
+/*
+  The static fallback. Echoes the composition of the real scene — dark core,
+  faint purple halo, offset toward the empty right-hand side of the layout —
+  so the page still reads as designed when the animation never arrives.
+*/
+.background-stage__still {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(58% 48% at 62% 42%, rgba(139, 92, 246, 0.16), transparent 70%),
+    radial-gradient(22% 20% at 62% 42%, #000 38%, transparent 74%),
+    radial-gradient(130% 105% at 50% 0%, #120b1f 0%, var(--bg, #040404) 62%);
+}
+
+.background-stage__canvas {
+  position: absolute;
+  inset: 0;
+}

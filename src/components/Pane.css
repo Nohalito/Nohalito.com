@@ -1,0 +1,36 @@
+.pane {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  padding: 96px clamp(28px, 6vw, 56px);
+  position: relative;
+
+  /* Anchor links land below the sticky header rather than under it. */
+  scroll-margin-top: 72px;
+}
+
+.pane__inner {
+  max-width: 520px;
+  width: 100%;
+}
+
+#about {
+  align-items: flex-start;
+  padding-top: 160px;
+}
+
+#experience {
+  min-height: 70vh;
+}
+
+/* Translucent: the background reads through, softened. */
+.pane--glass {
+  background: rgba(4, 4, 4, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Opaque: the background is hidden entirely for the length of this section. */
+.pane--solid {
+  background: var(--panel);
+}
