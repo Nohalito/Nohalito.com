@@ -13,6 +13,10 @@
 .home {
   --bg: #040404;
   --panel: #0d0d0d;
+  /* One step above --panel, for chips sitting *on* a solid pane (the skill tags
+     in the experience section). Too close to read as a colour, far enough to
+     read as a raised surface. */
+  --panel-2: #131316;
   --text: #f1f1f1;
   --muted: #8f8f93;
   --line: #222224;

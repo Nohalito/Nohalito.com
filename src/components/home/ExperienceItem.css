@@ -1,22 +1,100 @@
 .experience-item {
   display: flex;
   gap: 14px;
-  align-items: baseline;
-  margin: 0 0 10px;
-  font-size: 1rem;
+  padding: 9px 0;
 }
 
+/* Sized to the longest date the data actually carries ("Apr–Oct 2026") and no
+   wider: at three columns the gutter is charged against the title beside it. */
 .experience-item__period {
   flex: none;
-  width: 96px;
+  width: 84px;
+  padding-top: 2px;
   color: var(--purple);
   font-size: 12px;
+  /* Dates stack digit-over-digit down the column instead of wobbling, which is
+     what makes the gutter read as an axis rather than as a ragged list. */
+  font-variant-numeric: tabular-nums;
 }
 
-.experience-item__role {
+/* Flex children default to `min-width: auto`, which refuses to shrink below
+   their longest word — without this, a long title overflows the column. */
+.experience-item__body {
+  min-width: 0;
+}
+
+.experience-item__title {
+  margin: 0;
   color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.45;
 }
 
+/*
+  Deliberately not a `__tag`. The tags are a muted row of skills at the foot of
+  an entry; this is a qualifier on the entry itself, so it borrows the timeline's
+  purple and sits up in the heading where it cannot be mistaken for one.
+
+  `color-mix` rather than a hardcoded rgba: the border has to stay a fraction of
+  whatever `--purple` is, so re-theming the accent does not leave a violet hairline
+  behind. Where it is unsupported the declaration drops and the chip keeps its
+  purple text, which is still legible as a marker.
+*/
+.experience-item__badge {
+  display: inline-block;
+  margin-left: 7px;
+  padding: 0 7px;
+  border: 1px solid color-mix(in srgb, var(--purple) 45%, transparent);
+  border-radius: 999px;
+  color: var(--purple);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  line-height: 1.7;
+  text-transform: uppercase;
+  /* Nudged toward the title's cap height; on the baseline it hangs low. */
+  vertical-align: 1px;
+  white-space: nowrap;
+}
+
+.experience-item__subtitle {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.experience-item__description {
+  white-space: pre-line;
+  max-width: 56ch;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.experience-item__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 9px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.experience-item__tag {
+  padding: 3px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  line-height: 1.5;
+}
+
+/* Below this the date gutter costs more than it buys: it would leave roughly
+   half the line for the title. */
 @media (max-width: 480px) {
   .experience-item {
     flex-direction: column;
@@ -25,5 +103,6 @@
 
   .experience-item__period {
     width: auto;
+    padding-top: 0;
   }
 }

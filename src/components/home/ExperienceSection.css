@@ -1,5 +1,115 @@
+/*
+  Independent timelines, side by side.
+
+  The track count is not written down here on purpose — `grid-auto-flow: column`
+  gives every column in the data a track of its own, so rebalancing the tracks
+  (splitting education in two, adding a fourth) stays a data edit rather than a
+  matching pair of edits in two files.
+
+  `minmax(0, 1fr)` rather than plain `1fr`: grid tracks are min-content sized by
+  default, so a long unbroken string (an institution name, a tag) in one column
+  would push it past its share and shove the others off-centre. The `minmax`
+  floor lets every track actually shrink to its share.
+*/
+.experience-section__columns {
+  /* Held here rather than inlined below because the subordinate column needs
+     the same value for its `min-height` without inheriting the size itself. */
+  --column-title-size: clamp(20px, 4vw, 24px);
+
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  margin-top: 22px;
+}
+
+/*
+  The gutters are padding rather than `gap` so each hairline can sit exactly in
+  the middle of one — with `gap` the border would hug the column it belongs to.
+  The outer edges give their padding back so the block still fills its measure.
+*/
+.experience-section__column {
+  padding: 0 clamp(14px, 1.8vw, 26px);
+}
+
+.experience-section__column:first-child {
+  padding-left: 0;
+}
+
+.experience-section__column:last-child {
+  padding-right: 0;
+}
+
+.experience-section__column + .experience-section__column {
+  border-left: 1px solid var(--line);
+}
+
+/*
+  These take the serif treatment the section `h2` used to carry, because with
+  that heading hidden they *are* the section's visible titles — the tracks are
+  the top-level structure now, not sub-labels within a titled block.
+
+  Declared here rather than borrowed from `.home h2`: these are `h3`s (the
+  hidden `h2` still owns the outline), and Home.css deliberately scopes the
+  serif to `h1, h2`, so reaching for it means saying so.
+
+  `flex-end` plus the shared `min-height` is what keeps all three underlines on
+  one line — without it the subordinate column's 13px label would sit its rule
+  a dozen pixels higher and every column would start at a different height.
+*/
+.experience-section__column-title {
+  display: flex;
+  align-items: flex-end;
+  min-height: calc(var(--column-title-size) * 1.35);
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-size: var(--column-title-size);
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+/*
+  The third track is the tail of the second, not a peer of the first two, so it
+  keeps the small sans label the columns used to share: the eye should read two
+  headings and a footnote rather than three equal claims on attention.
+*/
+.experience-section__column--sub .experience-section__column-title {
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
 .experience-section__list {
-  margin: 18px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/*
+  Stack well before the columns get genuinely cramped: each one carries a fixed
+  date gutter, so the text beside it runs out of room long before the column
+  itself looks narrow. Three across need roughly 1080px to stay readable, and
+  there is no two-across step in between — stacked, the education columns read
+  as one continuous run, which is what they were before the split.
+*/
+@media (max-width: 1080px) {
+  .experience-section__columns {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+  }
+
+  .experience-section__column {
+    padding: 0;
+  }
+
+  .experience-section__column + .experience-section__column {
+    margin-top: 32px;
+    border-left: 0;
+  }
 }

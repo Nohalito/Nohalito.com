@@ -19,8 +19,32 @@
   padding-top: 160px;
 }
 
+/*
+  The 96px above and below is sized for a short block of prose sitting alone in
+  the viewport. This pane is dense and, being the only opaque one, already reads
+  as a band of its own against the background — the extra air only pushes the
+  first column titles out of the fold.
+*/
 #experience {
   min-height: 70vh;
+  padding-top: 1vh;
+  padding-bottom: 1vh;
+}
+
+/*
+  The one pane that runs several columns, so it opts out of the 520px measure
+  entirely. That measure exists to keep a paragraph readable at a comfortable
+  line length; none of these columns are prose, and at 520px the three would be
+  about 170px wide each — narrower than the date gutter plus a job title.
+
+  Uncapped, so the columns take whatever the pane's own side padding leaves
+  them. `margin-inline: auto` keeps the block centred rather than pinned left —
+  it does nothing at full width, but it is what holds the centring if a cap ever
+  comes back, and auto margins are how you centre a flex item.
+*/
+#experience .pane__inner {
+  max-width: none;
+  margin-inline: auto;
 }
 
 /* Translucent: the background reads through, softened. */

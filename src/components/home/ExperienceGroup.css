@@ -1,0 +1,35 @@
+/*
+  Purple rule plus indent. The colour is the same one the date gutter uses, so
+  the pane keeps to a single accent hue: the rule reads as "this bracket belongs
+  to the timeline" rather than introducing a second colour with its own meaning.
+*/
+.experience-group {
+  margin: 10px 0;
+  padding-left: 18px;
+  border-left: 2px solid var(--purple);
+}
+
+.experience-group__label {
+  color: var(--purple);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.experience-group__description {
+  max-width: 56ch;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+/* The rows inside carry their own top padding, so this only needs to clear the
+   group's own description. */
+.experience-group__list {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
