@@ -149,7 +149,7 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
 
     // Create particles (white dots with trails)
     const particles = []
-    const particleCount = 500
+    const particleCount = 150
 
     for (let i = 0; i < particleCount; i++) {
       const angle = Math.random() * Math.PI * 2

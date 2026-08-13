@@ -79,7 +79,7 @@ export const EXPERIENCE = {
           period: 'Jun–Aug 2025',
           title: 'Industry 4.0 Engineer & Data Analyst - Intern',
           subtitle: 'Alfa Laval Vicarb, Fontanil',
-          description: '- Flow creation to source data for reporting on Power BI.',
+          description: '- Application design with Power Platform. \n - Computer vision with python. \n - Power BI dashboard creation.',
           tags: ['Python', 'Power Platform', 'Power BI', 'VBA'],
         },
         {
@@ -87,15 +87,13 @@ export const EXPERIENCE = {
           period: 'May–Jul 2024',
           title: 'Data Analyst - Intern',
           subtitle: 'Alinéa, Aubagne',
-          // TODO: real description — reporting, retail data.
-          description: 'Placeholder description of the mission.',
-          tags: ['Excel', 'SQL', 'Reporting'],
+          description: '- SQL query engineering.',
+          tags: ['BigQuery', 'SQL', 'Looker Studio'],
         },
       ],
     },
     {
       id: 'education-current',
-      // TODO: confirm these two column labels — they are the only new copy here.
       label: 'Education',
       entries: [
         {
@@ -103,19 +101,17 @@ export const EXPERIENCE = {
           label: 'Magistère in Economic Engineering',
           period: '2023–2026',
           description:
-            'Three-year selective programme layered on top of the three degrees below, combining economics with data science and programming.',
+            'Three-year selective programme layered on top of the three degrees below, combining big data with data science and AI.',
           entries: [
             {
               id: 'm2',
               period: '2025–2026',
-              title: 'Master 2, Econometrics & Data Science',
-              // The two Masters are one dual degree taken a year apart, which is
-              // the sort of thing a reader has to be told rather than infer.
+              title: 'Master 2, Econometrics & Statistics',
               badge: 'Dual degree',
               subtitle: 'Aix-Marseille University, France',
               description:
-                'Second year of the dual degree, back in France: advanced econometrics and machine learning methods.',
-              tags: ['Machine Learning', 'Econometrics', 'Python'],
+                'Second year of the dual degree, back in France: advanced machine learnings and econometrics methods.',
+              tags: ['Deep Learning', 'Interpretability in ML','Advanced Econometrics'],
             },
             {
               id: 'm1',
@@ -124,17 +120,17 @@ export const EXPERIENCE = {
               badge: 'Dual degree',
               subtitle: "Ca' Foscari University of Venice, Italy",
               description:
-                'First year of a dual degree abroad, focused on applying data analytics to business and policy questions.',
-              tags: ['Data Analysis', 'R', 'Business Analytics'],
+                'First year of a dual degree abroad, focused on applying data analytics with a specialization around AI, NLP and transformers.',
+              tags: ['Machine Learning', 'AI', 'Deep Learning','RGPD'],
             },
             {
               id: 'licence',
               period: '2023–2024',
-              title: "Bachelor's (Licence), MIASHS — 3rd year",
+              title: "Bachelor's (Licence), MIASHS - 3rd year",
               subtitle: 'Aix-Marseille University, France',
               description:
-                'Human and social sciences applied to data: statistics, econometrics and an introduction to programming.',
-              tags: ['Econometrics', 'Python', 'SQL'],
+                'Mathematics & Informatics applied to Human and social sciences: statistics, econometrics and an introduction to programming.',
+              tags: ['Python', 'SQL', 'Java', 'Econometrics'],
             },
           ],
         },
@@ -143,9 +139,6 @@ export const EXPERIENCE = {
     {
       id: 'education-prior',
       label: 'Prior studies',
-      // Not a third track so much as the tail of the second one. Flagged rather
-      // than left to a CSS `:nth-child`, because it is a fact about the content
-      // — reorder the columns and the flag still points at the right one.
       subordinate: true,
       entries: [
         {
@@ -161,8 +154,7 @@ export const EXPERIENCE = {
           id: 'bac',
           period: '2021',
           title: 'Baccalauréat',
-          // TODO: real description (track/specialty), or drop this line entirely.
-          description: 'Placeholder description.',
+          description: 'Mathematics and Economics science.',
         },
       ],
     },
