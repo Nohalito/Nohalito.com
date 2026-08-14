@@ -27,9 +27,10 @@ export function useActiveSection(sectionIds, { rootMargin = '-45% 0px -45% 0px' 
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveId(entry.target.id)
-        })
+        const visible = entries.filter((e) => e.isIntersecting)
+        if (visible.length === 0) return
+        visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+        setActiveId(visible[0].target.id)
       },
       { rootMargin, threshold: 0 },
     )

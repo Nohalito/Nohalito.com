@@ -8,7 +8,7 @@ import './AboutSection.css'
  * @param profile See PROFILE in `src/pages/homeContent.js`.
  */
 export default function AboutSection({ profile }) {
-  const { eyebrow, name, tagline, paragraphs, photo, birthDate, country} = profile
+  const { eyebrow, name, tagline, paragraphs, photo, birthYear, country} = profile
 
   return (
     <>
@@ -17,7 +17,7 @@ export default function AboutSection({ profile }) {
       <p className="eyebrow">{eyebrow}</p>
       <h1 className="about__name">{name}</h1>
       <p className="about__meta">
-        {country} · {calculateAge(birthDate)}
+        {country} · {calculateAge(birthYear)}
       </p>
       <p className="tagline">{tagline}</p>
 

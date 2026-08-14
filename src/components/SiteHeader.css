@@ -67,6 +67,12 @@
   right: 0;
 }
 
+/*
+  ⚠️ Stacking the header roughly doubles its height, and `.pane` offsets its
+  anchor targets by that height. Home.css restates this same 560px to switch
+  `--header-h` to the column value — if you move this breakpoint, or change the
+  padding or gap above, move that one too or anchor links land under the bar.
+*/
 @media (max-width: 560px) {
   .site-header {
     flex-direction: column;

@@ -1,8 +1,19 @@
 import BlackHoleAnimation from '../components/BlackHoleAnimation'
 
+/**
+ * Development harness for the animation — the disc on its own, with no page
+ * around it, so it can be tuned without scrolling past the home content.
+ *
+ * The `<title>` is hoisted into `<head>` by React 19; see the note in
+ * `src/pages/Home.jsx`. It is labelled as a test rather than given a presentable
+ * name on purpose: this route is reachable but is not a page anyone was meant to
+ * land on, and the tab should say so.
+ */
 export default function BlackHoleTest() {
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100svh', overflow: 'hidden' }}>
+      <title>Black Hole Test — Nohalito</title>
+
       <BlackHoleAnimation />
       <div
         style={{

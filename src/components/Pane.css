@@ -1,12 +1,20 @@
 .pane {
   display: flex;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100svh;
   padding: 96px clamp(28px, 6vw, 56px);
   position: relative;
 
-  /* Anchor links land below the sticky header rather than under it. */
-  scroll-margin-top: 72px;
+  /*
+    Anchor links land below the sticky header rather than under it.
+
+    The value comes from `--header-h` (declared on `.home` in Home.css) because
+    the header is taller once it stacks into a column on narrow screens — a fixed
+    72px put the section heading underneath the bar at ≤560px. The 72px here is
+    the fallback for a `.pane` rendered outside `.home`, where the token does not
+    exist; it is the desktop height, not a second source of truth.
+  */
+  scroll-margin-top: var(--header-h, 72px);
 }
 
 .pane__inner {

@@ -147,7 +147,13 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
     const halo = new THREE.Mesh(haloGeometry, haloMaterial)
     scene.add(halo)
 
-    // Create particles (white dots with trails)
+    /*
+      The accretion disc is simulation state only — there is no mesh for the
+      particles themselves. Each one is drawn solely as its trail (a THREE.Line
+      below), whose newest vertex sits at the particle's position and draws at
+      full alpha. That leading vertex *is* the visible head, so a THREE.Points
+      on top of it would re-draw a point that is already lit.
+    */
     const particles = []
     const particleCount = 150
 
@@ -173,26 +179,6 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
       particles.push(particle)
     }
 
-    // Create particle meshes
-    const particleGeometry = new THREE.BufferGeometry()
-    const particlePositions = new Float32Array(particleCount * 3)
-
-    particles.forEach((p, i) => {
-      particlePositions[i * 3] = p.x
-      particlePositions[i * 3 + 1] = p.y
-      particlePositions[i * 3 + 2] = p.z
-    })
-
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3))
-    const particleMaterial = new THREE.PointsMaterial({
-      color: 0xffffff,
-      size: 0.02,
-      transparent: true,
-      opacity: 0,
-    })
-    const particlePoints = new THREE.Points(particleGeometry, particleMaterial)
-    scene.add(particlePoints)
-
     // Trail lines with fading shader material
     const trailMaterial = new THREE.ShaderMaterial({
       uniforms: {
@@ -215,15 +201,17 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
       `,
       transparent: true,
     })
+    
+    const trailCapacity = particles.reduce(
+      (longest, particle) => Math.max(longest, particle.maxTrailLength),
+      0,
+    )
 
-    // Pre-allocate trail buffers to reuse each frame (reduces GC)
-    const maxTrailLength = 50
     const trails = particles.map(() => {
       const trailGeometry = new THREE.BufferGeometry()
 
-      // Pre-allocate buffers
-      const positions = new Float32Array(maxTrailLength * 3)
-      const alphas = new Float32Array(maxTrailLength)
+      const positions = new Float32Array(trailCapacity * 3)
+      const alphas = new Float32Array(trailCapacity)
 
       trailGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
       trailGeometry.setAttribute('alpha', new THREE.BufferAttribute(alphas, 1))
@@ -275,15 +263,6 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
         }
       })
 
-      // Update particle positions
-      const positions = particlePoints.geometry.attributes.position.array
-      particles.forEach((p, i) => {
-        positions[i * 3] = p.x
-        positions[i * 3 + 1] = p.y
-        positions[i * 3 + 2] = p.z
-      })
-      particlePoints.geometry.attributes.position.needsUpdate = true
-
       // Update trails with fading effect (reusing pre-allocated buffers)
       trails.forEach((trailData, idx) => {
         const particle = particles[idx]
@@ -334,8 +313,6 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
       blackHoleMaterial.dispose()
       haloGeometry.dispose()
       haloMaterial.dispose()
-      particleGeometry.dispose()
-      particleMaterial.dispose()
       trailMaterial.dispose()
       trails.forEach((trail) => trail.geometry.dispose())
     }

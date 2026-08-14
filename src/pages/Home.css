@@ -28,8 +28,22 @@
   --font-serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
   --font-sans: 'Segoe UI', Helvetica, Arial, sans-serif;
 
+  /*
+    Height of the sticky header, published so `.pane` can offset anchor targets
+    by it instead of hardcoding a number that only holds at one breakpoint.
+
+    It is declared here, on `.home`, rather than on the header itself: custom
+    properties inherit *downwards*, and `.site-header` is a sibling of `.pane`,
+    not an ancestor. A common ancestor is the only place this can reach both.
+
+    72px is the row layout: 20px padding twice, a 18px brand at the `line-height:
+    1.7` below, and the 1px bottom border. The narrow override is at the foot of
+    this file.
+  */
+  --header-h: 72px;
+
   position: relative;
-  min-height: 100vh;
+  min-height: 100svh;
   background-color: var(--bg);
   color: var(--text);
 
@@ -101,4 +115,28 @@
   outline: 2px solid var(--purple);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+/*
+  ⚠️ This 560px must stay in step with the identical breakpoint in
+  SiteHeader.css, which is what actually changes the header's height — there the
+  header becomes a column, here we restate the consequence. Custom properties
+  cannot be used in media query conditions, so without a preprocessor the number
+  has to be written twice. Change one, change the other.
+
+  104px is the column layout: 20px padding twice, the 18px brand and the 12px
+  nav both at `line-height: 1.7` (31px and 20px), the 12px gap between them, and
+  the 1px border.
+
+  This assumes the nav stays on one line, which it does down to ~310px — the
+  three labels plus their gaps come to roughly 258px, against 272px of content
+  width at a 320px viewport. A fourth section, or a longer label, would wrap it
+  and cost another ~44px. If that happens, measure the header with a
+  ResizeObserver and set this property from JS rather than adding a third
+  breakpoint to guess at.
+*/
+@media (max-width: 560px) {
+  .home {
+    --header-h: 104px;
+  }
 }

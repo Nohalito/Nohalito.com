@@ -17,7 +17,7 @@ body,
 }
 
 body {
-  min-height: 100vh;
+  min-height: 100svh;
 
   /* Set here too, so there is no white flash before a page's own background
      paints. */

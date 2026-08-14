@@ -1,0 +1,5 @@
+# Omnics stays above ground ?
+# Doesn't works in github pages anyway
+
+User-agent: *
+Allow: /

@@ -17,17 +17,38 @@ import './ExperienceItem.css'
  * The sub-title and description are `div`s rather than `p`s on purpose: Home.css
  * styles `.home p` at (0,1,1) specificity, which would quietly outrank any
  * single-class rule here and drag both back to body size and spacing.
+ *
+ * `headingLevel` exists because the same row renders at two different depths.
+ * Directly under a column it sits below that column's `h3`, so it is an `h4`;
+ * inside an ExperienceGroup it sits below the group's own `h4`, so it must drop
+ * to `h5` or the outline skips a rank. The level is the caller's to know — the
+ * row cannot see how deeply it was nested.
+ *
+ * @param headingLevel 4 under a column, 5 inside a group. Written as a ternary
+ *   over two literals rather than `` `h${n}` `` so the value stays a union of
+ *   known tag names: a plain template string widens to `string`, which is not a
+ *   valid JSX element type and fails the `checkJs` pass in jsconfig.json.
  */
-export default function ExperienceItem({ period, title, badge, subtitle, description, tags }) {
+export default function ExperienceItem({
+  period,
+  title,
+  badge,
+  subtitle,
+  description,
+  tags,
+  headingLevel = 4,
+}) {
+  const Heading = headingLevel === 5 ? 'h5' : 'h4'
+
   return (
     <li className="experience-item">
       <span className="experience-item__period">{period}</span>
 
       <div className="experience-item__body">
-        <h4 className="experience-item__title">
+        <Heading className="experience-item__title">
           {title}
           {badge ? <span className="experience-item__badge">{badge}</span> : null}
-        </h4>
+        </Heading>
         {subtitle ? <div className="experience-item__subtitle">{subtitle}</div> : null}
         {description ? <div className="experience-item__description">{description}</div> : null}
 

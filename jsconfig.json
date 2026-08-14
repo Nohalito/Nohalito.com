@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "noImplicitAny": false,
+    "maxNodeModuleJsDepth": 0,
+    "types": ["vite/client"],
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "target": "ES2022"
+  },
+  "include": ["src"]
+}

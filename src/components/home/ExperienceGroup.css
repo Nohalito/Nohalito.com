@@ -9,7 +9,19 @@
   border-left: 2px solid var(--purple);
 }
 
+/*
+  `margin` and `font-weight` are here only because this element became an `h4`
+  (for the outline — see the component docblock). As a `div` it carried no user
+  agent styling; as a heading it inherits `margin: 1.33em 0` and `bold`, which
+  would space the group off its rule and break the pane's single-weight look.
+  Neutralising both keeps the semantic change invisible, which is the point.
+
+  index.css is a deliberate minimal reset with no heading rules, so this has to
+  be said locally rather than assumed.
+*/
 .experience-group__label {
+  margin: 0;
+  font-weight: 400;
   color: var(--purple);
   font-size: 11px;
   letter-spacing: 0.1em;

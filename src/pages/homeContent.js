@@ -20,10 +20,13 @@ export const SECTIONS = [
 
 export const BRAND = 'Nohalito'
 
+export const PAGE_TITLE = 'Nohalito'
+
 export const PROFILE = {
   eyebrow: 'About me',
   name: 'Noa Boimond',
-  birthDate: '2003-11-15',
+  /* Year only, on purpose — see the docblock in `src/utils/calculateAge.js`. */
+  birthYear: 2004,
   country: 'France',
   tagline: 'Currently employed as a Data Engineer intern at Equancy | Groupe EDG.',
   paragraphs: [
@@ -176,7 +179,7 @@ export const PROJECTS = {
       id: 'black-hole',
       title: 'Black Hole',
       description:
-        'A Three.js accretion disc: 500 particles spiralling inward, each trailing a fading line. Also the background of this page.',
+        'A Three.js accretion disc: 150 particles spiralling inward, each trailing a fading line. Also the background of this page.',
       to: '/black-hole-test',
     },
     {
@@ -191,10 +194,10 @@ export const PROJECTS = {
 }
 
 export const FOOTER = {
-  note: 'Noa Boimond. Tous droits réservés.',
+  note: 'Noa Boimond. All rights reserved.',
   links: [
     { label: 'GitHub', href: 'https://github.com/Nohalito', icon: 'github' },
-    { label: 'LinkedIn', href: 'www.linkedin.com/in/noa-boimond', icon: 'linkedin' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/noa-boimond/', icon: 'linkedin' },
     // { label: 'Email', href: 'mailto:you@example.com', icon: 'mail' },
   ],
 }

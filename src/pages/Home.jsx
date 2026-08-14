@@ -5,7 +5,7 @@ import Pane from '../components/Pane'
 import AboutSection from '../components/home/AboutSection'
 import ExperienceSection from '../components/home/ExperienceSection'
 import ProjectsSection from '../components/home/ProjectsSection'
-import { BRAND, EXPERIENCE, FOOTER, PROFILE, PROJECTS, SECTIONS } from './homeContent'
+import { BRAND, EXPERIENCE, FOOTER, PAGE_TITLE, PROFILE, PROJECTS, SECTIONS } from './homeContent'
 import './Home.css'
 
 /**
@@ -17,10 +17,20 @@ import './Home.css'
  *   About      glass  — the black hole shows through
  *   Experience solid  — eclipsed entirely
  *   Projects   glass  — and back again
+ *
+ * The `<title>` below is not misplaced. React 19 hoists `<title>` and `<meta>`
+ * rendered anywhere in the tree into `<head>` itself, which is why this project
+ * needs no `react-helmet`. For a title specifically React inserts *before* any
+ * existing `head > title` rather than after — and since the browser reads the
+ * first one in tree order, the route's title wins while index.html's stays a
+ * real fallback for the moment before hydration, and for anything that does not
+ * run JS. Unmounting removes it and the fallback surfaces again.
  */
 export default function Home() {
   return (
     <div className="home">
+      <title>{PAGE_TITLE}</title>
+
       <BackgroundStage />
       <SiteHeader brand={BRAND} sections={SECTIONS} />
 

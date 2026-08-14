@@ -1,13 +1,9 @@
-export function calculateAge(birthDate) {
-  const birth = new Date(birthDate)
-  const today = new Date()
-
-  let age = today.getFullYear() - birth.getFullYear()
-  const birthdayHasOccurredThisYear =
-    today.getMonth() > birth.getMonth() ||
-    (today.getMonth() === birth.getMonth() && today.getDate() >= birth.getDate())
-
-  if (!birthdayHasOccurredThisYear) age -= 1
-
-  return age
+/**
+ * Age in whole year
+ *
+ * @param birthYear Four-digit year, e.g. 2004.
+ * @returns Age in years.
+ */
+export function calculateAge(birthYear) {
+  return new Date().getFullYear() - birthYear
 }
