@@ -1,9 +1,9 @@
-# Nohalito.com
+# nohalito.org
 
 My personal website: an interactive presentation of myself, and a host for the small
 web applications I build along the way. 
 
-**Live:** https://nohalito.github.io/Nohalito.com/
+**Live:** https://nohalito.github.io/nohalito.org/
 
 ## Table of contents
 
@@ -31,7 +31,7 @@ web applications I build along the way.
 ## Project structure
 
 ```
-Nohalito.com/
+nohalito.org/
 ├─ .github/workflows/deploy.yml   # build → lint → upload → deploy to Pages
 ├─ public/
 │  ├─ 404.html                    # SPA redirect trick, half of the clean-URL pair
@@ -95,18 +95,23 @@ bun run preview  # serve the built output, base path and all
 | Environment | URL |
 | --- | --- |
 | Dev server | http://localhost:5173 |
-| Preview build | http://localhost:4173/Nohalito.com/ |
-| Production | https://nohalito.github.io/Nohalito.com/ |
+| Preview build | http://localhost:4173/nohalito.org/ |
+| Production | https://nohalito.github.io/nohalito.org/ |
 
 Routes: `/` redirects to `/home`; `/black-hole-test` renders the background on its own for tuning; `/cram-cards` is the first hosted app.
 
 ## Deployment
 
-The site is served from a GitHub Pages **project** subpath, `/Nohalito.com/`, and that value is written in three files that must agree:
+The site is served from a GitHub Pages **project** subpath, `/nohalito.org/` — the repo name, not a domain — and that value is written in five files that must agree. Three break the site if they disagree:
 
-1. [`vite.config.js`](vite.config.js) — `base: '/Nohalito.com/'`
-2. [`src/App.jsx`](src/App.jsx) — `<BrowserRouter basename="/Nohalito.com">`
-3. [`public/404.html`](public/404.html) — `pathSegmentsToKeep = 1`
+1. [`vite.config.js`](vite.config.js) — `base: '/nohalito.org/'`
+2. [`src/App.jsx`](src/App.jsx) — `<BrowserRouter basename="/nohalito.org">`
+3. [`public/404.html`](public/404.html) — `pathSegmentsToKeep = 1` (segments, not the name — a rename leaves this alone)
+
+Two more embed it in an absolute URL and go wrong silently, since scrapers and crawlers resolve them off-site and so cannot use a relative path:
+
+4. [`index.html`](index.html) — `og:url`
+5. [`public/sitemap.xml`](public/sitemap.xml) — `<loc>`
 
 Clean URLs come from the [spa-github-pages](https://github.com/rafgraph/spa-github-pages) trick. GitHub Pages has no server-side rewrite, so a hard refresh on `/home` would 404.
 

@@ -26,9 +26,9 @@ jobs:
       #
       # Deliberately WITHOUT the `static_site_generator: vite` input. That input
       # injects a base path of its own choosing, which would fight the
-      # `base: '/Nohalito.com/'` in vite.config.js — and CLAUDE.md requires that
+      # `base: '/nohalito.org/'` in vite.config.js — and CLAUDE.md requires that
       # value to stay in agreement with App.jsx's basename and 404.html's
-      # pathSegmentsToKeep. Three sources of truth are already enough.
+      # pathSegmentsToKeep. Five sources of truth are already enough.
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

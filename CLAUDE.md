@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Nohalito.com** is a personal portfolio site (React 19 + Vite, deployed to GitHub Pages) that also hosts small standalone web apps. The project treats code quality and engineering reasoning as part of the deliverable, not just the visual result — most modules carry a docblock explaining *why* they are shaped the way they are. Match that when editing: explain the reasoning, not the mechanics.
+**nohalito.org** is a personal portfolio site (React 19 + Vite, deployed to GitHub Pages) that also hosts small standalone web apps. The project treats code quality and engineering reasoning as part of the deliverable, not just the visual result — most modules carry a docblock explaining *why* they are shaped the way they are. Match that when editing: explain the reasoning, not the mechanics.
 
 ## Development Commands
 
@@ -40,17 +40,28 @@ Three settings there are load-bearing and easy to undo by accident:
 
 There is deliberately **no `paths` / `@/*` alias**. It would need a matching `resolve.alias` in [vite.config.js](vite.config.js), and a `paths` entry without one lets the editor green-light imports the build then rejects. The repo has one `../../` import today, so the alias is not yet worth two sources of truth — add both halves together or neither.
 
-## Deployment path — three files must agree
+## Deployment path — five files must agree
 
-The site is served from a GitHub Pages **project** subpath, currently `/Nohalito.com/`. Changing it means changing all three:
+The site is served from a GitHub Pages **project** subpath, currently `/nohalito.org/` (the repo name; it is not a domain anyone owns, and the site is served from `github.io`). Three files encode it, and getting any of them wrong breaks the site outright:
 
-1. [vite.config.js](vite.config.js) — `base: '/Nohalito.com/'`
-2. [src/App.jsx](src/App.jsx) — `<BrowserRouter basename="/Nohalito.com">`
+1. [vite.config.js](vite.config.js) — `base: '/nohalito.org/'`
+2. [src/App.jsx](src/App.jsx) — `<BrowserRouter basename="/nohalito.org">`
 3. [public/404.html](public/404.html) — `pathSegmentsToKeep = 1` (0 only if the site moves to a custom domain / user page at the root)
 
-The GitHub Actions workflow ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) hardcodes no path — it just uploads `dist` — so it needs no change. It does pass `actions/configure-pages` **without** `static_site_generator: vite`, deliberately: that input injects a base path of its own and would become a fourth opinion about this value.
+Note that #3 counts path *segments*, not the name — renaming the repo leaves it at 1, because the site is still one level below the origin. It is the one value a rename must **not** touch.
 
-A fourth file joins the list only for an **origin** change (custom domain), not a subpath change: [index.html](index.html)'s `og:url` is an absolute `https://nohalito.github.io/Nohalito.com/`. Open Graph is resolved by scrapers on their own servers, so it cannot be relative and cannot use the base placeholder. Everything else in that head uses `%BASE_URL%`, which Vite substitutes from `base` at build time — prefer it for any new asset path so the count stays at three. Note the substitution is plain text and does not skip HTML comments, so don't write the placeholder inside one.
+Two more carry the path inside an absolute URL, and are wrong *silently* — the site still works, it just misreports its own address to machines:
+
+4. [index.html](index.html) — `og:url`, currently `https://nohalito.github.io/nohalito.org/`
+5. [public/sitemap.xml](public/sitemap.xml) — `<loc>`, the same URL
+
+⚠️ This section previously claimed #4 joined the list only for an **origin** change (a custom domain), not a subpath change. That was wrong, and cost a rename: `og:url` is absolute, so it contains the subpath as well as the origin. A repo rename changes both. #5 was not listed at all. If the site ever does move to a custom domain, all five change, plus a `CNAME` file in `public/`.
+
+Open Graph and sitemap URLs cannot be relative and cannot use the base placeholder — scrapers and crawlers resolve them on their own servers, with no page context. That is why they duplicate the value instead of deriving it. Everything else in that head uses `%BASE_URL%`, which Vite substitutes from `base` at build time — prefer it for any new asset path so the count stays at five. Note the substitution is plain text and does not skip HTML comments, so don't write the placeholder inside one.
+
+The GitHub Actions workflow ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) hardcodes no path — it just uploads `dist` — so it needs no change. It does pass `actions/configure-pages` **without** `static_site_generator: vite`, deliberately: that input injects a base path of its own and would become a sixth opinion about this value.
+
+Renaming the repo and pushing the matching commit cannot be atomic, and the rename alone breaks the live site: `index.html` still loads, then every asset 404s at the old path. Rename, edit, verify with `bun run preview`, then push.
 
 Clean URLs come from the [spa-github-pages](https://github.com/rafgraph/spa-github-pages) trick, split across two files that must stay paired: `public/404.html` encodes the requested path into a query string, and the inline script in [index.html](index.html) decodes it back before React mounts. Neither is dead code.
 

@@ -11,7 +11,7 @@ const BlackHoleTest = lazy(() => import('./pages/BlackHoleTest'))
 
 function App() {
   return (
-    <BrowserRouter basename="/Nohalito.com">
+    <BrowserRouter basename="/nohalito.org">
       <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<Navigate to="/home" replace />} />
