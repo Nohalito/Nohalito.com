@@ -14,7 +14,7 @@
 .experience-section__columns {
   /* Held here rather than inlined below because the subordinate column needs
      the same value for its `min-height` without inheriting the size itself. */
-  --column-title-size: clamp(20px, 4vw, 24px);
+  --column-title-size: clamp(1.25rem, 4vw, 1.5rem);
 
   display: grid;
   grid-auto-flow: column;
@@ -53,7 +53,7 @@
   serif to `h1, h2`, so reaching for it means saying so.
 
   `flex-end` plus the shared `min-height` is what keeps all three underlines on
-  one line — without it the subordinate column's 13px label would sit its rule
+  one line — without it the subordinate column's smaller label would sit its rule
   a dozen pixels higher and every column would start at a different height.
 */
 .experience-section__column-title {
@@ -78,7 +78,7 @@
 .experience-section__column--sub .experience-section__column-title {
   color: var(--muted);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 0.813rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   line-height: 1.5;

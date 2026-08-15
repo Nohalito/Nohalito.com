@@ -30,7 +30,7 @@ The script is scoped to `eslint src`, so root-level files (`vite.config.js`, the
 
 ### Type checking
 
-There is no `tsconfig.json` and no `typescript` dependency: the codebase stays plain JSX, and [jsconfig.json](jsconfig.json) runs TypeScript's *checker* over it via `checkJs`. VS Code does this live; the CLI equivalent is `bunx tsc --noEmit -p jsconfig.json` (not a package script, since `typescript` is not installed). **Currently 10 errors, all genuine** — listed in §7 of [docs/repository-assessment.md](docs/repository-assessment.md). Nothing enforces them in CI.
+There is no `tsconfig.json` and no `typescript` dependency: the codebase stays plain JSX, and [jsconfig.json](jsconfig.json) runs TypeScript's *checker* over it via `checkJs`. VS Code does this live; the CLI equivalent is `bunx tsc --noEmit -p jsconfig.json` (not a package script, since `typescript` is not installed). **Currently 10 errors, all genuine**. Nothing enforces them in CI.
 
 Three settings there are load-bearing and easy to undo by accident:
 
@@ -74,8 +74,6 @@ The tighter constraint sits one module further down. `BackgroundStage` *does* st
 
 Verify by chunk size, not by reading the imports: after touching anything in that graph, `bun run build` and check `dist/assets` for a `BlackHoleAnimation-*.js` around 350 kB sitting *beside* an `index-*.js` around 400 kB. One fat bundle means the split is gone.
 
-[docs/black-hole-background.md](docs/black-hole-background.md) is the live working spec for this area — read it before changing the animation, and update its checkboxes as items land.
-
 ### Home page composition
 
 [src/pages/Home.jsx](src/pages/Home.jsx) composes only; it neither styles nor fetches. Three `<Pane>` sections alternate `glass` (background shows through) and `solid` (background eclipsed) to give the scroll a beat.
@@ -99,9 +97,6 @@ Plain CSS, one `.css` file next to each component, imported by it. [src/index.cs
 One trap: `.visually-hidden` is used by `SiteFooter` and `ExperienceSection` but defined in [Home.css](src/pages/Home.css) scoped as `.home .visually-hidden`. It works today only because both render inside `<div className="home">`. Reusing either component on another page would make the "hidden" label visible — move the rule to `index.css` at that point.
 
 ## Other notes
-
-- `timeline-proposals.html` at the repo root is a self-contained static design exploration for the Experience layout. It is a reference mockup, not part of the build — the site does not import it. (Earlier `design-templates*.html` rounds have been removed; don't go looking for them.)
-- Gitignored and therefore invisible to CI: `Notes.md`, `dist/`, and the large `.jpg`/`.webm` reference assets at the root. `src/assets/major_CoD.jpg` *is* tracked — its `_ini` original is not.
 
 ## When suggesting libraries or features
 

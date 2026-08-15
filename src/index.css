@@ -18,15 +18,12 @@ body,
 
 body {
   min-height: 100svh;
-
-  /* Set here too, so there is no white flash before a page's own background
-     paints. */
   background-color: #040404;
 }
 
-/* Anchor links in the header glide rather than jump. */
 html {
   scroll-behavior: smooth;
+  font-size: 110%;
 }
 
 img,

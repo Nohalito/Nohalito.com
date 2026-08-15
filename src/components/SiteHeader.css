@@ -7,7 +7,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 20px clamp(24px, 5vw, 44px);
+  /* Vertical padding in `rem`, horizontal in px: the vertical is half of what
+     `--header-h` adds up to, so it has to move with the type scale or anchor
+     offsets drift; the horizontal is page margin and answers to the viewport. */
+  padding: 1.25rem clamp(24px, 5vw, 44px);
 
   background: rgba(4, 4, 4, 0.6);
   backdrop-filter: blur(10px);
@@ -17,7 +20,7 @@
 
 .site-header__brand {
   font-family: var(--font-serif);
-  font-size: 18px;
+  font-size: 1.125rem;
   color: var(--text);
   text-decoration: none;
   letter-spacing: 0.02em;
@@ -28,7 +31,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
-  font-size: 12px;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -77,6 +80,7 @@
   .site-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    /* Counted into the stacked `--header-h`, so it scales with the rest. */
+    gap: 0.75rem;
   }
 }

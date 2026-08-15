@@ -14,7 +14,7 @@
   border-top: 1px solid var(--line);
 
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .site-footer__note {
@@ -42,7 +42,9 @@
   color: var(--text);
 }
 
+/* In `rem` so the glyphs stay the same optical weight as the line of text they
+   sit beside when the type scale moves. */
 .site-footer__icon svg {
-  width: 15px;
-  height: 15px;
+  width: 0.9375rem;
+  height: 0.9375rem;
 }

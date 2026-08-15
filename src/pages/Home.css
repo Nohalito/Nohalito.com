@@ -36,11 +36,15 @@
     properties inherit *downwards*, and `.site-header` is a sibling of `.pane`,
     not an ancestor. A common ancestor is the only place this can reach both.
 
-    72px is the row layout: 20px padding twice, a 18px brand at the `line-height:
-    1.7` below, and the 1px bottom border. The narrow override is at the foot of
-    this file.
+    4.5rem is the row layout: 1.25rem padding twice, a 1.125rem brand at the
+    `line-height: 1.7` below, and the 1px bottom border. In `rem` so it tracks
+    the root type scale (index.css) along with the header's own sizes — a px
+    value here would leave anchors landing under the bar at any other scale.
+    The 1px border is the rounding: it does not scale, so the value is a hair
+    generous at large scales and exact at the default. The narrow override is at
+    the foot of this file.
   */
-  --header-h: 72px;
+  --header-h: 4.5rem;
 
   position: relative;
   min-height: 100svh;
@@ -73,13 +77,18 @@
   color: var(--text);
 }
 
+/*
+  The clamp bounds are `rem` so they ride the root scale; the `vw` middle term
+  deliberately does not — it is the viewport-fit rule, and the bounds are what
+  the type scale is entitled to move.
+*/
 .home h1 {
-  font-size: clamp(26px, 5vw, 32px);
+  font-size: clamp(1.625rem, 5vw, 2rem);
 }
 
 .home h2 {
   margin: 0 0 12px;
-  font-size: clamp(20px, 4vw, 24px);
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
   padding-bottom: 10px;
   border-bottom: 1px solid var(--line);
 }
@@ -124,9 +133,9 @@
   cannot be used in media query conditions, so without a preprocessor the number
   has to be written twice. Change one, change the other.
 
-  104px is the column layout: 20px padding twice, the 18px brand and the 12px
-  nav both at `line-height: 1.7` (31px and 20px), the 12px gap between them, and
-  the 1px border.
+  6.5rem is the column layout: 1.25rem padding twice, the 1.125rem brand and the
+  0.75rem nav both at `line-height: 1.7` (1.9rem and 1.28rem), the 0.75rem gap
+  between them, and the 1px border.
 
   This assumes the nav stays on one line, which it does down to ~310px — the
   three labels plus their gaps come to roughly 258px, against 272px of content
@@ -137,6 +146,6 @@
 */
 @media (max-width: 560px) {
   .home {
-    --header-h: 104px;
+    --header-h: 6.5rem;
   }
 }

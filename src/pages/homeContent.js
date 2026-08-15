@@ -27,7 +27,7 @@ export const PROFILE = {
   country: 'France',
   tagline: 'Currently employed as a Data Engineer intern at Equancy | EDG.',
   paragraphs: [
-    'Working between the limit of a Data Engineer and Cloud Engineer, I specialize myself in the Google Cloud environment with multiple basic services deployed on it.',
+    'Working between the limit of a Data Engineer and Cloud Engineer, I specialize myself in the Google Cloud environment with multiple services deployed on it.',
     'I work with GCP, Terraform, and Python. While continuing on improving these skills, I also want to get more experience with the AWS environment and software development.',
     "Aside from this, I'm a big fan of Noita. You all should go play Noita, like, now.",
   ],
@@ -46,23 +46,23 @@ export const EXPERIENCE = {
           period: 'Apr–Oct 2026',
           title: 'Data Engineer - Intern',
           subtitle: 'Equancy | EDG Group, Paris',
-          description: '- Developing and publishing a coding-interview web-application.\n- Completing the GCP Professional Data Engineer learning path.\n- Creating Agent on GCP with RAG.',
-          tags: ['GCP', 'Terraform', 'GitLab', 'Full-stack', 'Agentic AI'],
+          description: '- Developing and publishing a coding-interview web-application.\n- Completing the GCP Professional Data Engineer learning path.\n- Creating Agents on GCP with RAG.',
+          tags: ['GCP', 'Terraform', 'Full-stack', 'FastAPI', 'Agentic AI'],
         },
         {
           id: 'alfa-laval',
           period: 'Jun–Aug 2025',
           title: 'Industry 4.0 Engineer & Data Analyst - Intern',
-          subtitle: 'Alfa Laval Vicarb, Fontanil',
+          subtitle: 'Alfa Laval Vicarb, Fontanil-Cornillon',
           description: '- Application design with Power Platform. \n - Computer vision with python. \n - Power BI dashboard creation.',
-          tags: ['Python', 'Power Platform', 'Power BI', 'VBA'],
+          tags: ['Computer vision', 'Power Platform', 'Power BI', 'VBA'],
         },
         {
           id: 'alinea',
           period: 'May–Jul 2024',
           title: 'Data Analyst - Intern',
           subtitle: 'Alinéa, Aubagne',
-          description: '- SQL query engineering.',
+          description: '- SQL ad hoc query engineering on BigQuery.',
           tags: ['BigQuery', 'SQL', 'Looker Studio'],
         },
       ],
@@ -86,7 +86,7 @@ export const EXPERIENCE = {
               subtitle: 'Aix-Marseille University, France',
               description:
                 'Second year of the dual degree, back in France: advanced machine learnings and econometrics methods.',
-              tags: ['Deep Learning', 'Interpretability in ML','Advanced Econometrics'],
+              tags: ['Deep Learning', ' ML Interpretability','Advanced Econometrics'],
             },
             {
               id: 'm1',
@@ -96,7 +96,7 @@ export const EXPERIENCE = {
               subtitle: "Ca' Foscari University of Venice, Italy",
               description:
                 'First year of a dual degree abroad, focused on applying data analytics with a specialization around AI, NLP and transformers.',
-              tags: ['Machine Learning', 'AI', 'Deep Learning','RGPD'],
+              tags: ['Machine Learning', 'NLP & Transformers','GDPR'],
             },
             {
               id: 'licence',
@@ -138,30 +138,30 @@ export const EXPERIENCE = {
 
 export const PROJECTS = {
   title: 'Projects',
-  intro: 'Things built on this site, and the reasons they exist.',
+  intro: "An archive of all the Leg-... projects I made or participated in.",
   items: [
-    {
-      id: 'cram-cards',
-      title: 'Cram Cards',
-      description: 'Placeholder description — what it does and why you built it.',
-      // Internal route: rendered as a router Link, no full page reload.
-      to: '/cram-cards',
-    },
     {
       id: 'black-hole',
       title: 'Black Hole',
       description:
-        'A Three.js accretion disc: 150 particles spiralling inward, each trailing a fading line. Also the background of this page.',
+        'An absorbing ThreeJs animation to serve as this website background',
       to: '/black-hole-test',
     },
     {
-      id: 'qr-code-generator',
-      title: 'QR Code Generator',
-      description: 'Placeholder description.',
-      // No route wired up yet, so the card renders without a link rather than
-      // pointing somewhere broken.
-      status: 'In progress',
+      id: 'cram-cards',
+      title: 'Cram Cards',
+      description: '!!! Underconstruction !!! \n I might or not build it.',
+      // Internal route: rendered as a router Link, no full page reload.
+      to: '/cram-cards',
     },
+    // {
+    //   id: 'qr-code-generator',
+    //   title: 'QR Code Generator',
+    //   description: 'Placeholder description.',
+    //   // No route wired up yet, so the card renders without a link rather than
+    //   // pointing somewhere broken.
+    //   status: 'In progress',
+    // },
   ],
 }
 
@@ -170,6 +170,5 @@ export const FOOTER = {
   links: [
     { label: 'GitHub', href: 'https://github.com/Nohalito', icon: 'github' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/noa-boimond/', icon: 'linkedin' },
-    // { label: 'Email', href: 'mailto:you@example.com', icon: 'mail' },
   ],
 }

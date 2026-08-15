@@ -4,11 +4,13 @@ Learning/
 major_CoD_ini.jpg
 blackhole-reference-steam.webm
 resume.txt
-#timeline-proposals.html
 docs/
+templates/
+
 
 # Temp
-.github/
+# .github/
+qr-code-generator/
 
 # test
 my-bun-app/

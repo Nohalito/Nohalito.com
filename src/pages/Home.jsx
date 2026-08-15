@@ -15,7 +15,7 @@ import './Home.css'
  * background they let through:
  *
  *   About      glass  — the black hole shows through
- *   Experience solid  — eclipsed entirely
+ *   Experience solid  — dimmed to a hint behind the panel
  *   Projects   glass  — and back again
  *
  * The `<title>` below is not misplaced. React 19 hoists `<title>` and `<meta>`

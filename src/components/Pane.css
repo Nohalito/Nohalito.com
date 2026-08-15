@@ -29,7 +29,7 @@
 
 /*
   The 96px above and below is sized for a short block of prose sitting alone in
-  the viewport. This pane is dense and, being the only opaque one, already reads
+  the viewport. This pane is dense and, being the only solid one, already reads
   as a band of its own against the background — the extra air only pushes the
   first column titles out of the fold.
 */
@@ -37,6 +37,20 @@
   min-height: 70vh;
   padding-top: 1vh;
   padding-bottom: 1vh;
+}
+
+/*
+  A heading, one line of intro and a row of short cards — well under a screenful,
+  so the 100svh floor was buying empty space at the foot of the page and pushing
+  the footer past the fold for no gain. 80svh still holds the pane open as its own
+  beat; it just stops reserving room the content never asks for.
+
+  `svh` rather than `vh` to match the base rule above: on mobile, `vh` measures
+  the viewport with the browser chrome *retracted*, so a `vh` floor is taller than
+  what is actually on screen at rest.
+*/
+#projects {
+  min-height: 85svh;
 }
 
 /*
@@ -62,7 +76,18 @@
   -webkit-backdrop-filter: blur(4px);
 }
 
-/* Opaque: the background is hidden entirely for the length of this section. */
+/*
+  Near-opaque: the panel colour at 80%, so the background is dimmed to a hint
+  rather than eclipsed. `color-mix` instead of a hardcoded `rgba(13, 13, 13, .8)`
+  keeps `--panel` the single source of the colour — retheming the panel does not
+  leave a stale literal behind here.
+
+  The plain `var(--panel)` above it is the fallback, not a leftover: where
+  `color-mix` is unsupported the second declaration is dropped as invalid and the
+  pane goes back to fully opaque, which is the old behaviour rather than a
+  transparent hole.
+*/
 .pane--solid {
   background: var(--panel);
+  background: color-mix(in srgb, var(--panel) 85%, transparent);
 }

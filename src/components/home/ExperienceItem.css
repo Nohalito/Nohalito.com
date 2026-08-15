@@ -5,13 +5,15 @@
 }
 
 /* Sized to the longest date the data actually carries ("Apr–Oct 2026") and no
-   wider: at three columns the gutter is charged against the title beside it. */
+   wider: at three columns the gutter is charged against the title beside it.
+   The width is `rem` because it is measured off the font-size right below it —
+   in px it would clip that longest date as soon as the type scale went up. */
 .experience-item__period {
   flex: none;
-  width: 84px;
+  width: 5.25rem;
   padding-top: 2px;
   color: var(--purple);
-  font-size: 12px;
+  font-size: 0.75rem;
   /* Dates stack digit-over-digit down the column instead of wobbling, which is
      what makes the gutter read as an axis rather than as a ragged list. */
   font-variant-numeric: tabular-nums;
@@ -48,7 +50,7 @@
   border: 1px solid color-mix(in srgb, var(--purple) 45%, transparent);
   border-radius: 999px;
   color: var(--purple);
-  font-size: 10px;
+  font-size: 0.625rem;
   letter-spacing: 0.06em;
   line-height: 1.7;
   text-transform: uppercase;
@@ -88,7 +90,7 @@
   border-radius: 999px;
   background: var(--panel-2);
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: 0.656rem;
   letter-spacing: 0.03em;
   line-height: 1.5;
 }
