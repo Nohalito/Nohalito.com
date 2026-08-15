@@ -5,7 +5,7 @@ import Pane from '../components/Pane'
 import AboutSection from '../components/home/AboutSection'
 import ExperienceSection from '../components/home/ExperienceSection'
 import ProjectsSection from '../components/home/ProjectsSection'
-import { BRAND, EXPERIENCE, FOOTER, PAGE_TITLE, PROFILE, PROJECTS, SECTIONS } from './homeContent'
+import { BRAND, EXPERIENCE, FOOTER, PROFILE, PROJECTS, SECTIONS } from './homeContent'
 import './Home.css'
 
 /**
@@ -29,7 +29,6 @@ import './Home.css'
 export default function Home() {
   return (
     <div className="home">
-      <title>{PAGE_TITLE}</title>
 
       <BackgroundStage />
       <SiteHeader brand={BRAND} sections={SECTIONS} />

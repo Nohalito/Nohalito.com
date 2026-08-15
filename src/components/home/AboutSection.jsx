@@ -24,14 +24,6 @@ export default function AboutSection({ profile }) {
       {paragraphs.map((paragraph) => (
         <p key={paragraph}>{paragraph}</p>
       ))}
-
-      {/* Decorative nudge that the page continues below the fold.
-      <span className="scroll-hint" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M12 5v14m0 0-6-6m6 6 6-6" />
-        </svg>
-        scroll
-      </span> */}
     </>
   )
 }

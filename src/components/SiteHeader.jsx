@@ -32,7 +32,7 @@ export default function SiteHeader({ brand, sections }) {
               className={isActive ? 'navlink is-active' : 'navlink'}
               /* Tells a screen reader which section is current, rather than
                  leaving the state as colour-only information. */
-              aria-current={isActive ? 'true' : undefined}
+              aria-current={isActive ? 'location' : undefined}
             >
               {label}
             </a>

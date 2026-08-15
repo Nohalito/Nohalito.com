@@ -12,7 +12,6 @@ import BlackHoleAnimation from '../components/BlackHoleAnimation'
 export default function BlackHoleTest() {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100svh', overflow: 'hidden' }}>
-      <title>Black Hole Test — Nohalito</title>
 
       <BlackHoleAnimation />
       <div

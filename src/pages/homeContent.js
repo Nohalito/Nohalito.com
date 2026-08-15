@@ -10,7 +10,7 @@
  * Drives both the header nav and the panes themselves, so the two cannot drift
  * apart. Order here is the order on the page.
  */
-import majorCoD from '../assets/major_CoD.jpg'
+import majorCoD from '../assets/major_CoD.webp'
 
 export const SECTIONS = [
   { id: 'about', label: 'About' },
@@ -20,15 +20,12 @@ export const SECTIONS = [
 
 export const BRAND = 'Nohalito'
 
-export const PAGE_TITLE = 'Nohalito'
-
 export const PROFILE = {
   eyebrow: 'About me',
   name: 'Noa Boimond',
-  /* Year only, on purpose — see the docblock in `src/utils/calculateAge.js`. */
   birthYear: 2004,
   country: 'France',
-  tagline: 'Currently employed as a Data Engineer intern at Equancy | Groupe EDG.',
+  tagline: 'Currently employed as a Data Engineer intern at Equancy | EDG.',
   paragraphs: [
     'Working between the limit of a Data Engineer and Cloud Engineer, I specialize myself in the Google Cloud environment with multiple basic services deployed on it.',
     'I work with GCP, Terraform, and Python. While continuing on improving these skills, I also want to get more experience with the AWS environment and software development.',
@@ -37,31 +34,6 @@ export const PROFILE = {
   photo: majorCoD,
 }
 
-/**
- * Three parallel tracks rather than one merged list, because they genuinely
- * overlap: the internships cut into the middle of the Magistère instead of
- * following it, so a single date-ordered list would read as one confused
- * sequence. Roles come first so they land in the left column.
- *
- * The two education columns are one story split at the point where it stops
- * being linear. Everything from 2023 on happens *inside* the Magistère and
- * concurrently with the roles on the left; everything before it is a plain
- * sequence that already finished. Splitting there keeps the middle column
- * aligned in time with the left one instead of pushing it down the page.
- *
- * An entry is one of two shapes, and the renderer tells them apart by whether
- * `entries` is present:
- *
- *   row   — { id, period, title, badge?, subtitle?, description?, tags? }
- *   group — { id, label, period, description?, entries: [row, ...] }
- *
- * The group exists for the Magistère, which is not a fourth degree sitting
- * beside the others but a programme layered on top of three of them.
- *
- * All three columns run most-recent-first. They sit side by side, so a column
- * reading upward next to one reading downward would be a visible mismatch —
- * flip all three if you ever want chronological instead.
- */
 export const EXPERIENCE = {
   title: 'Experience & Education',
   columns: [
@@ -109,7 +81,7 @@ export const EXPERIENCE = {
             {
               id: 'm2',
               period: '2025–2026',
-              title: 'Master 2, Econometrics & Statistics',
+              title: 'Master 2, Econometrics & Data Science',
               badge: 'Dual degree',
               subtitle: 'Aix-Marseille University, France',
               description:

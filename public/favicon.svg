@@ -1,15 +1,12 @@
-<!--
-  Accretion disc seen near edge-on, with the hole punched out of its centre —
-  the site's one visual idea, reduced until it survives 16 square pixels.
-
-  SVG rather than .ico: one file, no raster sizes to maintain, and it stays
-  sharp on any density. Colours are the page's own #040404 and #8b5cf6, hard
-  coded because a favicon is fetched outside the document and cannot see the
-  CSS custom properties they normally come from.
--->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#040404" />
-  <ellipse cx="16" cy="16" rx="12" ry="5" fill="none" stroke="#8b5cf6" stroke-width="2.5" />
-  <circle cx="16" cy="16" r="5.5" fill="#040404" />
-  <circle cx="16" cy="16" r="5.5" fill="none" stroke="#8b5cf6" stroke-width="1" opacity="0.5" />
+  <defs>
+    <radialGradient id="halo" cx="16" cy="16" r="12" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="42%" stop-color="#ffffff" />
+      <stop offset="58%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <circle cx="16" cy="16" r="12" fill="url(#halo)" />
+  <circle cx="16" cy="16" r="5" fill="#040404" />
 </svg>
