@@ -1,0 +1,15 @@
+/*
+  This route paints no background of its own: index.css sets `body` to #040404
+  for the whole site, so the browser's default near-black text renders invisible
+  here. The colour is set once on the page root and inherited by everything
+  inside, rather than repeated per element — the scaffold will grow more text,
+  and each new element should not have to remember this.
+
+  Scoped to `.cram-cards` rather than declared on `body` in index.css: that file
+  is a deliberate reset, and a global text colour there would be a design
+  decision every future route inherits whether or not it wants it.
+*/
+.cram-cards {
+  color: #fff;
+  padding: 48px clamp(24px, 5vw, 44px);
+}

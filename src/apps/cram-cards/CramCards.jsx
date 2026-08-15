@@ -9,9 +9,11 @@ import './CramCards.css'
  */
 export default function CramCards() {
   return (
-    <div>
+    <div className="cram-cards">
       <title>Cram Cards — Nohalito</title>
       <h1>Cram Cards</h1>
+
+      <p>&quot;Under-construction&quot; ?</p>
     </div>
   )
 }
