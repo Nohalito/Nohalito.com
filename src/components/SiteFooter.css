@@ -9,8 +9,8 @@
   padding: 22px clamp(24px, 5vw, 44px);
 
   background: rgba(4, 4, 4, 0.6);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* backdrop-filter: blur(10px); */
+  /* -webkit-backdrop-filter: blur(10px); */
   border-top: 1px solid var(--line);
 
   color: var(--muted);

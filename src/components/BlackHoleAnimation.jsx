@@ -37,11 +37,11 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
     // once we can measure the container.
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000)
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true })
 
     // Cap the pixel ratio: retina phones report 3+, which triples the pixels
     // shaded for no visible gain on an out-of-focus background.
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1))
     renderer.domElement.style.display = 'block'
     container.appendChild(renderer.domElement)
 
@@ -149,13 +149,14 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
 
     /*
       The accretion disc is simulation state only — there is no mesh for the
-      particles themselves. Each one is drawn solely as its trail (a THREE.Line
-      below), whose newest vertex sits at the particle's position and draws at
-      full alpha. That leading vertex *is* the visible head, so a THREE.Points
-      on top of it would re-draw a point that is already lit.
+      particles themselves. Each one is drawn solely as its trail (a run of
+      segments in the shared LineSegments below), whose newest vertex sits at
+      the particle's position and draws at full alpha. That leading vertex *is*
+      the visible head, so a THREE.Points on top of it would re-draw a point
+      that is already lit.
     */
     const particles = []
-    const particleCount = 150
+    const particleCount = 75
 
     for (let i = 0; i < particleCount; i++) {
       const angle = Math.random() * Math.PI * 2
@@ -179,7 +180,7 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
       particles.push(particle)
     }
 
-    // Trail lines with fading shader material
+    // One shared material across every trail — and, below, one shared geometry.
     const trailMaterial = new THREE.ShaderMaterial({
       uniforms: {
         color: { value: new THREE.Color(0xffffff) },
@@ -202,32 +203,53 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
       transparent: true,
     })
     
-    const trailCapacity = particles.reduce(
-      (longest, particle) => Math.max(longest, particle.maxTrailLength),
+    /*
+      Every trail lives in a single LineSegments rather than one THREE.Line
+      apiece. A trail per object cost a draw call and two buffer uploads each —
+      at 75 particles, 77 draw calls and 150 uploads per frame, where the bytes
+      were negligible and the per-call driver overhead was the whole expense.
+
+      LineSegments rather than Line is what makes the merge possible at all:
+      Line draws a *connected* strip, so one holding every trail would join the
+      last point of each to the first point of the next with a stray segment
+      flung across the scene. LineSegments reads its vertices in independent
+      pairs, so segments that happen to share a buffer stay unrelated.
+
+      Capacity is summed per particle rather than assumed uniform, so a particle
+      carrying a different maxTrailLength still gets room: n points make n-1
+      segments, and each segment brings its own two vertices.
+    */
+    const vertexCapacity = particles.reduce(
+      (total, particle) => total + (particle.maxTrailLength - 1) * 2,
       0,
     )
 
-    const trails = particles.map(() => {
-      const trailGeometry = new THREE.BufferGeometry()
+    const trailPositions = new Float32Array(vertexCapacity * 3)
+    const trailAlphas = new Float32Array(vertexCapacity)
 
-      const positions = new Float32Array(trailCapacity * 3)
-      const alphas = new Float32Array(trailCapacity)
+    // DynamicDrawUsage tells the driver this buffer is rewritten every frame,
+    // so it is kept somewhere cheap to update rather than parked as geometry
+    // that was meant to be uploaded once.
+    const trailPositionAttr = new THREE.BufferAttribute(trailPositions, 3)
+      .setUsage(THREE.DynamicDrawUsage)
+    const trailAlphaAttr = new THREE.BufferAttribute(trailAlphas, 1)
+      .setUsage(THREE.DynamicDrawUsage)
 
-      trailGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-      trailGeometry.setAttribute('alpha', new THREE.BufferAttribute(alphas, 1))
+    const trailGeometry = new THREE.BufferGeometry()
+    trailGeometry.setAttribute('position', trailPositionAttr)
+    trailGeometry.setAttribute('alpha', trailAlphaAttr)
 
-      const trailLine = new THREE.Line(trailGeometry, trailMaterial)
-      scene.add(trailLine)
+    const trailLines = new THREE.LineSegments(trailGeometry, trailMaterial)
 
-      return {
-        line: trailLine,
-        geometry: trailGeometry,
-        positions,
-        alphas,
-        positionAttr: trailGeometry.attributes.position,
-        alphaAttr: trailGeometry.attributes.alpha,
-      }
-    })
+    /*
+      The buffer is rewritten every frame, but its bounding sphere would be
+      derived once — from whatever sat in it at first render, which is all
+      zeros. Three would then cull the entire disc the moment the origin left
+      the frustum. The trails span the scene and are never off screen, so the
+      test can only ever be wrong here; dropping it is both correct and free.
+    */
+    trailLines.frustumCulled = false
+    scene.add(trailLines)
 
     // Animation loop
     let frameId = null
@@ -263,28 +285,54 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
         }
       })
 
-      // Update trails with fading effect (reusing pre-allocated buffers)
-      trails.forEach((trailData, idx) => {
-        const particle = particles[idx]
-        const { positions, alphas, positionAttr, alphaAttr, line } = trailData
+      /*
+        Repack every live segment into the front of the shared buffer.
 
-        if (particle.trail.length > 0) {
-          // Update pre-allocated buffers
-          particle.trail.forEach((pos, i) => {
-            positions[i * 3] = pos.x
-            positions[i * 3 + 1] = pos.y
-            positions[i * 3 + 2] = pos.z
-            alphas[i] = i / particle.trail.length
-          })
+        Trails vary in length — spawns are staggered, and a reset empties one
+        outright — so a fixed slot per particle would leave holes, and
+        `setDrawRange` can only draw a contiguous prefix; it has no way to skip.
+        Writing compacted from zero and reporting the running count is what lets
+        all of them share one draw call.
 
-          // Update draw range to match trail length
-          line.geometry.setDrawRange(0, particle.trail.length)
+        This also retires a one-frame artefact the per-line version had: a reset
+        trail kept drawing its stale vertices until it refilled, because the
+        update was guarded on `length > 0` while the draw range stayed put. Here
+        an empty trail simply contributes nothing to the count.
+      */
+      let vertexCount = 0
 
-          // Mark buffers as needing update
-          positionAttr.needsUpdate = true
-          alphaAttr.needsUpdate = true
+      for (let p = 0; p < particles.length; p++) {
+        const trail = particles[p].trail
+
+        // n points make n-1 segments, so 0 or 1 point draws nothing.
+        for (let i = 0; i < trail.length - 1; i++) {
+          const from = trail[i]
+          const to = trail[i + 1]
+
+          trailPositions[vertexCount * 3] = from.x
+          trailPositions[vertexCount * 3 + 1] = from.y
+          trailPositions[vertexCount * 3 + 2] = from.z
+          /*
+            The same ramp as the strip version: index over length, so the oldest
+            point is transparent and the head sits just under full opacity. Each
+            segment interpolates between its own two ends, which is exactly what
+            the strip did across its shared vertices — so writing the ramp twice
+            per point reproduces the old gradient rather than approximating it.
+          */
+          trailAlphas[vertexCount] = i / trail.length
+          vertexCount++
+
+          trailPositions[vertexCount * 3] = to.x
+          trailPositions[vertexCount * 3 + 1] = to.y
+          trailPositions[vertexCount * 3 + 2] = to.z
+          trailAlphas[vertexCount] = (i + 1) / trail.length
+          vertexCount++
         }
-      })
+      }
+
+      trailGeometry.setDrawRange(0, vertexCount)
+      trailPositionAttr.needsUpdate = true
+      trailAlphaAttr.needsUpdate = true
 
       // Slowly rotate black hole
       blackHole.rotation.x += 0.0001
@@ -314,7 +362,7 @@ export default function BlackHoleAnimation({ background = createSpaceGradientBac
       haloGeometry.dispose()
       haloMaterial.dispose()
       trailMaterial.dispose()
-      trails.forEach((trail) => trail.geometry.dispose())
+      trailGeometry.dispose()
     }
   }, [background])
 
