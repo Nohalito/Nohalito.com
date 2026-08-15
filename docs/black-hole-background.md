@@ -123,8 +123,8 @@ decorates.
 
 ### What it is
 
-The scene currently draws 500 particles, each owning its own `THREE.Line` trail.
-That is ~500 separate draw calls plus ~500 buffer uploads **every frame**. On a
+The scene currently draws 150 particles, each owning its own `THREE.Line` trail.
+That is ~150 separate draw calls plus ~150 buffer uploads **every frame**. On a
 desktop GPU this is wasteful; on a mid-range phone it means dropped frames, a
 warm device and visible battery drain — while being, at most, decoration.
 
@@ -150,7 +150,7 @@ Two extra wrinkles specific to this design:
 - [ ] Pause the loop on `document.visibilitychange`
 - [ ] Pause the loop when the opaque Experience pane covers the viewport
       (`IntersectionObserver`) — cheap, invisible to the user, real saving
-- [ ] Merge the 500 trail `Line`s into one buffer geometry if profiling says the
+- [ ] Merge the 150 trail `Line`s into one buffer geometry if profiling says the
       draw-call count is the bottleneck — **only after measuring**
 - [ ] Profile on an actual phone over the local network
 - [x] Code-split Three.js. `React.lazy` around `BlackHoleAnimation` in

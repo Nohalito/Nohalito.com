@@ -7,6 +7,9 @@ resume.txt
 #timeline-proposals.html
 docs/
 
+# Temp
+.github/
+
 # test
 my-bun-app/
 my-react-app/
