@@ -1,0 +1,75 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The documented pairing for upload-pages-artifact: it resolves the Pages
+      # site metadata the upload/deploy steps expect.
+      #
+      # Deliberately WITHOUT the `static_site_generator: vite` input. That input
+      # injects a base path of its own choosing, which would fight the
+      # `base: '/Nohalito.com/'` in vite.config.js — and CLAUDE.md requires that
+      # value to stay in agreement with App.jsx's basename and 404.html's
+      # pathSegmentsToKeep. Three sources of truth are already enough.
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Pinned rather than `latest`: with `latest`, a Bun release can break the
+      # build on a commit that changed nothing, and the failure looks like it
+      # came from the code. Bump this deliberately, as its own commit.
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      # `--frozen-lockfile` makes CI fail rather than silently resolve different
+      # versions than bun.lock pins. Without it the committed lockfile is only
+      # advisory, and CI can install a dependency tree no developer has run.
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Placed before the build so a lint failure stops the job in seconds
+      # rather than after a full Vite build. `bun run lint` is scoped to
+      # `eslint src` and exits non-zero on any error, which is what makes this
+      # a gate rather than a report — the `pull_request` trigger above only
+      # told you the build compiled until now.
+      - name: Lint
+        run: bun run lint
+
+      - name: Build
+        run: bun run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
