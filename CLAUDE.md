@@ -89,7 +89,7 @@ Verify by chunk size, not by reading the imports: after touching anything in tha
 
 [src/pages/Home.jsx](src/pages/Home.jsx) composes only; it neither styles nor fetches. Three `<Pane>` sections alternate `glass` (background shows through) and `solid` (background eclipsed) to give the scroll a beat.
 
-All copy and data live in [src/pages/homeContent.js](src/pages/homeContent.js), separate from the components that render it — editing wording should never mean opening a component. `SECTIONS` drives both the header nav and the panes, so the two cannot drift. Most content is now real; the remaining `TODO` placeholders are the Cram Cards and QR generator project descriptions.
+All copy and data live in [src/pages/homeContent.js](src/pages/homeContent.js), separate from the components that render it — editing wording should never mean opening a component. `SECTIONS` drives both the header nav and the panes, so the two cannot drift. Most content is now real; the remaining `TODO` placeholders are the Flash Cards and QR generator project descriptions.
 
 Each pane has a section component under [src/components/home/](src/components/home/) taking its slice of `homeContent` as one prop. `EXPERIENCE` is three parallel columns rather than one merged list, and within a column `ExperienceSection` distinguishes a row from a group *by whether `entries` is present* — so adding a field named `entries` to a row silently reclassifies it. The `EXPERIENCE` docblock carries the reasoning and both field lists; read it before restructuring that data.
 
@@ -99,7 +99,7 @@ Several components take a prop that seeds a `useEffect` dependency — `BlackHol
 
 ### Hosted apps
 
-Each lives under `src/apps/<app-name>/` with the entry component at the root plus `components/` and `hooks/` subfolders (`.gitkeep`-ed while empty). `cram-cards` and `qr-code-generator` are both scaffolds only; `qr-code-generator` is not yet routed in `App.jsx`. Follow that layout for new apps.
+Each lives under `src/apps/<app-name>/` with the entry component at the root plus `components/` and `hooks/` subfolders (`.gitkeep`-ed while empty). `flash-cards` and `qr-code-generator` are both scaffolds only; `qr-code-generator` is not yet routed in `App.jsx`. Follow that layout for new apps.
 
 ### Styling
 

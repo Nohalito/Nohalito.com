@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 22px clamp(24px, 5vw, 44px);
+  padding: 18px clamp(24px, 5vw, 44px);
 
   background: rgba(4, 4, 4, 0.6);
   /* backdrop-filter: blur(10px); */
@@ -45,6 +45,6 @@
 /* In `rem` so the glyphs stay the same optical weight as the line of text they
    sit beside when the type scale moves. */
 .site-footer__icon svg {
-  width: 0.9375rem;
-  height: 0.9375rem;
+  width: 1.6rem;
+  height: 1.6rem;
 }

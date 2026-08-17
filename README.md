@@ -40,7 +40,7 @@ nohalito.org/
 │  └─ sitemap.xml
 ├─ src/
 │  ├─ apps/                       # standalone apps hosted on the site
-│  │  └─ cram-cards/              # <App>.jsx + .css at the root, then:
+│  │  └─ flash-cards/             # <App>.jsx + .css at the root, then:
 │  │     ├─ components/
 │  │     └─ hooks/
 │  ├─ assets/
@@ -71,7 +71,7 @@ nohalito.org/
 └─ vite.config.js
 ```
 
-Each hosted app follows the same shape: `src/apps/<app-name>/` with the entry component at the root and `components/` + `hooks/` beneath it. `cram-cards` and `qr-code-generator` are both scaffolds for now.
+Each hosted app follows the same shape: `src/apps/<app-name>/` with the entry component at the root and `components/` + `hooks/` beneath it. `flash-cards` and `qr-code-generator` are both scaffolds for now.
 
 ## Getting started
 
@@ -98,7 +98,7 @@ bun run preview  # serve the built output, base path and all
 | Preview build | http://localhost:4173/nohalito.org/ |
 | Production | https://nohalito.github.io/nohalito.org/ |
 
-Routes: `/` redirects to `/home`; `/black-hole-test` renders the background on its own for tuning; `/cram-cards` is the first hosted app.
+Routes: `/` redirects to `/home`; `/black-hole-test` renders the background on its own for tuning; `/flash-cards` is the first hosted app.
 
 ## Deployment
 

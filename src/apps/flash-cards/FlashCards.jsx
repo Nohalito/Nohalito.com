@@ -1,4 +1,4 @@
-import './CramCards.css'
+import './FlashCards.css'
 
 /**
  * Scaffold only — the route renders a heading and nothing else yet.
@@ -7,11 +7,11 @@ import './CramCards.css'
  * see the note in `src/pages/Home.jsx` for why rendering it here works and what
  * index.html's static title is still for.
  */
-export default function CramCards() {
+export default function FlashCards() {
   return (
-    <div className="cram-cards">
-      <title>Cram Cards — Nohalito</title>
-      <h1>Cram Cards</h1>
+    <div className="flash-cards">
+      <title>Flash Cards — Nohalito</title>
+      <h1>Flash Cards</h1>
 
       <p>&quot;Under-construction&quot; ?</p>
     </div>

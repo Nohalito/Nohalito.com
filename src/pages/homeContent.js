@@ -148,11 +148,11 @@ export const PROJECTS = {
       to: '/black-hole-test',
     },
     {
-      id: 'cram-cards',
-      title: 'Cram Cards',
+      id: 'flash-cards',
+      title: 'Flash Cards',
       description: '!!! Underconstruction !!! \n I might or not build it.',
       // Internal route: rendered as a router Link, no full page reload.
-      to: '/cram-cards',
+      to: '/flash-cards',
     },
     // {
     //   id: 'qr-code-generator',
