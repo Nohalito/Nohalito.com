@@ -1,0 +1,220 @@
+/*
+  The card.
+
+  No fixed aspect ratio. A ratio is what leaves margins around a card, and the
+  card is the thing you came to read — so it fills the stage minus its own
+  controls, capped at 960px by `.main__inner` so it does not become a letterbox
+  on a wide monitor. The consequence is that its shape follows the window: a
+  panel at 1400px, nearly square at 900px.
+*/
+.flash-cards .flip {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  perspective: 1800px;
+}
+
+/*
+  ⚠️ Filled by `inset`, not by `height: 100%`, and the difference is the whole
+  narrow layout.
+
+  A percentage height resolves against a *definite* containing block, and below
+  860px `.stage` is `height: auto` with a `min-height` — deliberately, so a short
+  phone can push the page rather than squeeze the card. A min-height does not
+  make a height definite. So `height: 100%` fell back to `auto`, and this element
+  has no in-flow content to be `auto` about: both faces are absolutely
+  positioned. It collapsed to zero, while `.flip` above it still stretched to
+  its share of the column — a full-height box with a card-shaped nothing in it,
+  and the gap down to the hit/miss row was the difference.
+
+  `inset: 0` is measured against the used padding box of the containing block,
+  which exists whether or not anything upstream is definite. `.flip` already
+  established one by carrying `perspective`; the `position: relative` above says
+  so out loud rather than leaving it to a side effect of the 3D property.
+*/
+.flash-cards .flip__inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+/* `is-flipped` sits on `.flip`, the ancestor — not on `.flip__inner`, which is
+   the element that actually rotates. Putting the state on the thing being
+   animated makes the selector unwritable from a parent. */
+.flash-cards .flip.is-flipped .flip__inner {
+  transform: rotateY(180deg);
+}
+
+.flash-cards .flip__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(24px, 3.2vw, 40px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  overflow: auto;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flash-cards .flip__face--back {
+  transform: rotateY(180deg);
+  background: var(--panel-2);
+  border-color: #2a2a2c;
+}
+
+.flash-cards .flip__body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.flash-cards .flip__body .q-text {
+  font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+}
+
+.flash-cards .flip__body .a-text {
+  font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+}
+
+.flash-cards .flip__hint {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4a4a51;
+}
+
+/*
+  A floor, and only on the layout that can honour it. Below 860px the stage is
+  free to grow past the viewport, so a card that would otherwise be handed
+  eighty pixels — a phone in landscape, or a topic bar that has wrapped to three
+  rows — takes what it needs and lets the page scroll. Above that width the
+  stage has a fixed height and there is nothing to grow into, which is why the
+  base rule's `min-height: 0` has to stay: a floor there would push the hit/miss
+  row off the bottom instead.
+*/
+@media (max-width: 860px) {
+  .flash-cards .flip {
+    min-height: 300px;
+  }
+}
+
+/* ---- hit / miss ----
+   The same red and green as the answer verdicts, and the same rule about not
+   leaning on them: a glyph, a word and a border style carry the meaning too. */
+.flash-cards .hitmiss {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.flash-cards .hitmiss button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-width: 148px;
+  padding: 9px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.flash-cards .hitmiss button:hover {
+  transform: translateY(-2px);
+  color: var(--text);
+}
+
+.flash-cards .hitmiss__glyph {
+  flex: none;
+  width: 19px;
+  height: 19px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.62rem;
+  line-height: 1;
+}
+
+.flash-cards .hitmiss__hit .hitmiss__glyph {
+  color: var(--correct);
+}
+
+.flash-cards .hitmiss__miss {
+  border-style: dashed;
+}
+
+.flash-cards .hitmiss__miss .hitmiss__glyph {
+  color: var(--wrong);
+}
+
+.flash-cards .hitmiss__hit:hover,
+.flash-cards .hitmiss__hit.is-on {
+  border-color: var(--correct-line);
+  background: var(--correct-dim);
+  color: var(--text);
+}
+
+.flash-cards .hitmiss__miss:hover,
+.flash-cards .hitmiss__miss.is-on {
+  border-color: var(--wrong-line);
+  background: var(--wrong-dim);
+  color: var(--text);
+}
+
+/* On a phone the stage is short and the card wants every pixel of it: the two
+   verdict buttons stop being a centred pair and become a full-width row. */
+@media (max-width: 560px) {
+  .flash-cards .hitmiss button {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 12px;
+  }
+}
+
+/*
+  With motion off the card must still change face. Losing the rotation would
+  leave the back permanently mirrored and hidden, so the two faces stop being a
+  3D pair and simply swap: the transition goes, `backface-visibility` goes, and
+  the front is taken out of the flow while the back is showing.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .flash-cards .flip__inner,
+  .flash-cards .flip.is-flipped .flip__inner {
+    transform: none;
+  }
+
+  .flash-cards .flip__face {
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+  }
+
+  .flash-cards .flip__face--back {
+    transform: none;
+    visibility: hidden;
+  }
+
+  .flash-cards .flip.is-flipped .flip__face--front {
+    visibility: hidden;
+  }
+
+  .flash-cards .flip.is-flipped .flip__face--back {
+    visibility: visible;
+  }
+}

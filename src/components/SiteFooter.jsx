@@ -1,10 +1,12 @@
 import './SiteFooter.css'
 
 /**
- * @param note Left-hand text, e.g. the copyright line.
- * @param links `[{ label, href, icon }]` where `icon` is one of the keys in
- *   ICONS below. Contact lives here rather than in the nav, so every header
- *   link points at a section that genuinely exists on the page.
+ * @param {object} props
+ * @param {string} props.note Left-hand text, e.g. the copyright line.
+ * @param {{ label: string, href: string, icon: 'github' | 'linkedin' }[]}
+ *   [props.links] `icon` is one of the keys in ICONS below. Contact lives here
+ *   rather than in the nav, so every header link points at a section that
+ *   genuinely exists on the page.
  */
 export default function SiteFooter({ note, links = [] }) {
   return (

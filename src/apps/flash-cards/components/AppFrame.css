@@ -1,0 +1,710 @@
+/*
+  The app shell, and the layer every screen in it draws from.
+
+  ---------------------------------------------------------------------------
+  Tokens
+
+  Declared on `.flash-cards`, mirroring how Home.css scopes the same names to
+  `.home` — precisely so the two routes can differ without a fight. It also
+  makes the shared components work: SiteHeader and SiteFooter style themselves
+  from `var(--line)`, `var(--text)` and friends, and inherit whichever page
+  root they are rendered inside. Declaring these is what lets this app reuse
+  those two components instead of porting them.
+
+  ---------------------------------------------------------------------------
+  This file is the app-wide layer
+
+  Everything else in the app has a stylesheet next to its component, per the
+  repo convention. This one is the exception on purpose: AppFrame is what every
+  route renders, so its stylesheet is the only one guaranteed to be loaded, and
+  therefore the only correct home for the tokens and for furniture (buttons,
+  the filter, menus, chips) that four different components use. Splitting the
+  furniture into a fifth file would leave its loading order dependent on which
+  route you happened to enter through.
+*/
+
+.flash-cards {
+  --bg: #040404;
+  --panel: #0d0d0d;
+  --panel-2: #131316;
+  --text: #f1f1f1;
+  --muted: #8f8f93;
+  --line: #222224;
+
+  --purple: #8b5cf6;
+  --blue: #49c9ff;
+
+  --font-serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+  --font-sans: 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /*
+    ---- answer feedback ----
+    Red/green, and never the only channel carrying the verdict: every place
+    these appear, a word and a glyph say the same thing. Green is lightened
+    past the textbook #22c55e because it goes muddy on a near-black panel.
+  */
+  --correct: #4ade80;
+  --correct-dim: rgba(74, 222, 128, 0.1);
+  --correct-line: rgba(74, 222, 128, 0.45);
+  --wrong: #f87171;
+  --wrong-dim: rgba(248, 113, 113, 0.09);
+  --wrong-line: rgba(248, 113, 113, 0.4);
+
+  /*
+    Height of the sticky block — the header, plus the topic bar where there is
+    one. The fallback is only a fallback: `useStickyTopHeight` overwrites this
+    with a measured value on mount and on every resize, because the real height
+    is a sum of rem padding, a serif line box and a border. See the hook.
+  */
+  --fc-top-h: 4.5rem;
+
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/*
+  The background still: the same composition as `.background-stage__still` at
+  about half strength, with no black hole. Fixed rather than absolute, so it
+  covers the footer too without depending on where the scroll container is.
+
+  ⚠️ There is deliberately no blanket `.flash-cards > *:not(.fc-bg)` rule
+  lifting everything above it. That is how the mockup did it, and it cost a
+  day: `:not()` takes the specificity of its argument, so the blanket rule
+  scored 0-2-0 against `.site-header { position: sticky }` at 0-1-0, and
+  specificity is settled before source order — the header silently stopped
+  being sticky. The three children that need lifting say so themselves below.
+*/
+.flash-cards .fc-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(58% 46% at 64% 34%, rgba(139, 92, 246, 0.085), transparent 70%),
+    radial-gradient(130% 100% at 50% 0%, #0d0916 0%, var(--bg) 58%);
+}
+
+/*
+  Header and topic bar stick as one element rather than as two with two
+  offsets. Two offsets have to agree with a measured height to stay flush, and
+  a stale measurement shows up as a strip of scrolling content in the seam
+  between them. Nested, the seam cannot exist.
+*/
+.flash-cards .fc-top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* The header is sticky in its own stylesheet, which is right on the home page
+   and redundant inside a sticky parent — it has nowhere to travel. Neutralised
+   here rather than there, because the home page still needs it. */
+.flash-cards .fc-top .site-header {
+  position: static;
+}
+
+.flash-cards .fc-main {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ===========================================================================
+   The topic bar
+   ---------------------------------------------------------------------------
+   Only pages inside a topic have one — a bar reading "Topic: —" on the main
+   page would be chrome pretending to be information.
+
+   It carries every action scoped to the *whole* topic: import, export, back to
+   all topics. That is not decoration. The detail pane has an export of its own,
+   and which bar a button sits on is the only thing telling you which one you
+   are about to press.
+   =========================================================================== */
+/*
+  It wraps, and every part of it wraps. Nothing on this bar can be made
+  narrower: the name ellipsises but the eyebrow, the count, the mode badge and
+  three buttons are all unbreakable strings that keep their width or leave. Held
+  on one line they simply left — the bar was the widest thing in the app and it
+  was what made the whole page scroll sideways on a phone, taking the panes
+  under it with it.
+
+  Growing a row is free here because `--fc-top-h` is measured, not declared, and
+  measured by a `ResizeObserver` — which is exactly the case its docblock cites.
+  A bar of a hard-coded height could not have been allowed to do this.
+*/
+.flash-cards .topic-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 18px;
+  padding: 10px clamp(24px, 5vw, 44px);
+  border-bottom: 1px solid var(--line);
+  background: rgba(4, 4, 4, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 0.78rem;
+}
+
+/* `0 1 auto`: it may shrink but must not grow, because a growing left region
+   would push the middle slot up against the actions and there would be no
+   middle. The slack belongs to `space-between`, which is what puts it there.
+   The inner wrap lets the count drop under the name rather than the name losing
+   characters to make room for it. */
+.flash-cards .topic-bar__id {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  min-width: 0;
+}
+
+.flash-cards .topic-bar__eyebrow {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #5e5e66;
+}
+
+/* `min-width: 0` is what lets the ellipsis happen at all. A flex item's
+   automatic minimum size is its min-content width — the longest word in the
+   name — and an item that refuses to go below that never reaches the width
+   where `text-overflow` has anything to do. */
+.flash-cards .topic-bar__name {
+  min-width: 0;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/*
+  The session screens: one row, always.
+
+  ⚠️ `nowrap` is not a style preference here, it is the thing that makes the
+  name shorten. Flex wrapping happens *before* shrinking: an item that does not
+  fit at its hypothetical size moves to the next line, and only then does what
+  is left on a line get shrunk. So with the bar allowed to wrap, a long name
+  never ellipsises — it pushes the badge and the link onto a second row and
+  keeps every character. Forbidding the wrap is what leaves shrinking as the
+  only answer, and `.topic-bar__name` above is the only part that can shrink,
+  the badge and the actions both being `flex: none`.
+*/
+.flash-cards .topic-bar--session {
+  flex-wrap: nowrap;
+}
+
+.flash-cards .topic-bar--session .topic-bar__id {
+  flex-wrap: nowrap;
+}
+
+/* The name is a button because it is editable in place — there is no topic
+   settings screen, and clicking the thing you want to change is the shortest
+   path to it that does not need one. */
+.flash-cards .topic-bar__rename {
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: text;
+  min-width: 0;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.flash-cards .topic-bar__rename:hover {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.flash-cards .topic-bar__input {
+  min-width: 12ch;
+  max-width: 46ch;
+  padding: 2px 8px;
+  border: 1px solid rgba(139, 92, 246, 0.6);
+  border-radius: 6px;
+  background: #0a0a0c;
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+}
+
+.flash-cards .topic-bar__input:focus {
+  outline: none;
+}
+
+.flash-cards .topic-bar__count,
+.flash-cards .topic-bar__mode {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: #6f6f76;
+  white-space: nowrap;
+}
+
+.flash-cards .topic-bar__mode {
+  padding: 1px 9px;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 999px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--purple);
+}
+
+/* The middle region: starting a session, as against the actions that manage the
+   file it lives in. It keeps its own `flex: none` and its own wrap, so when the
+   bar folds it folds *between* the three regions — a break that says something —
+   rather than wherever the fifth button happened to run out of room. */
+.flash-cards .topic-bar__center {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* `flex: none` keeps the group whole against the name beside it; the wrap is
+   for the last resort, where even three small buttons do not fit one line. */
+.flash-cards .topic-bar__actions {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===========================================================================
+   Shared furniture
+   =========================================================================== */
+.flash-cards .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.flash-cards .btn:hover {
+  border-color: #34343c;
+}
+
+.flash-cards .btn--primary {
+  border-color: rgba(139, 92, 246, 0.45);
+  background: rgba(139, 92, 246, 0.14);
+  color: #fff;
+}
+
+.flash-cards .btn--primary:hover {
+  border-color: rgba(139, 92, 246, 0.8);
+  background: rgba(139, 92, 246, 0.2);
+}
+
+.flash-cards .btn--ghost {
+  background: transparent;
+  color: var(--muted);
+}
+
+.flash-cards .btn--ghost:hover {
+  color: var(--text);
+}
+
+.flash-cards .btn--danger:hover {
+  border-color: var(--wrong-line);
+  color: var(--wrong);
+}
+
+.flash-cards .btn--sm {
+  padding: 5px 12px;
+  font-size: 0.74rem;
+  border-radius: 7px;
+}
+
+/* Disabled is information, not decoration: a topic can legitimately hold zero
+   questions, and "Start test" must then say so rather than start an empty one. */
+.flash-cards .btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: var(--line);
+  background: transparent;
+  color: var(--muted);
+}
+
+/* Every text field in the app: the item form's, and the name field the main
+   page creates a topic from. `resize` only reaches the ones that are
+   textareas, which is why one class covers both. */
+.flash-cards .inp {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #0a0a0c;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.flash-cards .inp:focus {
+  outline: none;
+  border-color: rgba(139, 92, 246, 0.6);
+}
+
+.flash-cards .inp::placeholder {
+  color: #4a4a52;
+}
+
+.flash-cards .ghost-btn {
+  padding: 4px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.flash-cards .ghost-btn:hover,
+.flash-cards .ghost-btn:focus-visible {
+  border-color: rgba(139, 92, 246, 0.55);
+  color: var(--text);
+}
+
+/* Import is a <label> over a hidden file input — the only element allowed to
+   open the OS file dialog from a single click. The input still takes the
+   focus, and a ring on a 1px box is invisible, so the label wears it. */
+.flash-cards .fc-import {
+  cursor: pointer;
+}
+
+.flash-cards .fc-import:has(input:focus-visible) {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+
+/* ---- the filter ----
+   The README lists two filters, "question or cards". A third state — All — is
+   added because two mutually exclusive filters and no reset leaves no way back
+   to the whole list, and the whole list is the default view. */
+.flash-cards .seg {
+  display: inline-flex;
+  flex: none;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.flash-cards .seg button {
+  padding: 4px 13px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #6f6f76;
+  font-family: inherit;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.flash-cards .seg button:hover {
+  color: var(--muted);
+}
+
+.flash-cards .seg button.is-on {
+  background: rgba(139, 92, 246, 0.18);
+  color: #fff;
+}
+
+/* The export menu's `.menu` / `.menu__pop` furniture lived here and is gone
+   with it: one button and a popover was how the app let you choose between
+   JSON and CSV, and JSON is now the only format it writes. */
+
+/* ---- type chip ----
+   Card and question differ by border colour *and* by the word inside. The word
+   carries the meaning; the colour only makes it faster to scan. */
+.flash-cards .chip {
+  flex: none;
+  padding: 1px 9px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.flash-cards .chip--card {
+  color: var(--blue);
+  border-color: rgba(73, 201, 255, 0.32);
+}
+
+.flash-cards .chip--question {
+  color: var(--purple);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.flash-cards .empty {
+  padding: 24px 18px;
+  border: 1px dashed #2c2c32;
+  border-radius: 9px;
+  text-align: center;
+  color: #6f6f76;
+  font-size: 0.84rem;
+}
+
+/* The "create new" affordance the README puts at the end of the list, and the
+   "Create a topic" tag at the end of the topic list. Dashed and unfilled in
+   both places — one visual language for "this one makes a new thing". */
+.flash-cards .newitem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  padding: 12px;
+  border: 1px dashed #33333a;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 300;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.flash-cards .newitem:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  color: var(--text);
+  background: rgba(139, 92, 246, 0.04);
+}
+
+/* Shared progress meter — the study panel's, and the score page's bars. */
+.flash-cards .meter {
+  position: relative;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.flash-cards .meter__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: var(--purple);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---- a message that reports what just happened ----
+   Dismissed by hand rather than on a timer: a count you have not read yet
+   should not vanish because four seconds passed. */
+.flash-cards .notice {
+  flex: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 13px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(139, 92, 246, 0.07);
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.flash-cards .notice--bad {
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.flash-cards .notice b {
+  color: var(--text);
+  font-weight: 400;
+}
+
+.flash-cards .notice__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.flash-cards .notice__x {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #5e5e66;
+  font-family: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.flash-cards .notice__x:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* The storage banner rides inside the sticky block so it is measured into
+   `--fc-top-h` — a message that pushed the page down without being counted
+   would put the footer that far below the fold. */
+.flash-cards .fc-storage {
+  padding: 8px clamp(24px, 5vw, 44px);
+  border-bottom: 1px solid var(--wrong-line);
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--text);
+  font-size: 0.76rem;
+}
+
+.flash-cards .fc-storage span {
+  color: var(--muted);
+}
+
+/*
+  The "nothing here" screens: no such topic, no cards to study, no session to
+  report. They live in this file rather than beside the route that shows them
+  because three different routes render one of them, and a stylesheet loaded by
+  only one of those routes is a screen that arrives unstyled from the other two.
+*/
+.flash-cards .fc-missing {
+  min-height: calc(100svh - var(--fc-top-h));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 14px;
+  padding: 40px clamp(24px, 5vw, 44px);
+}
+
+.flash-cards .fc-missing h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+}
+
+.flash-cards .fc-missing p {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.flash-cards .fc-missing .btn {
+  text-decoration: none;
+}
+
+/* ---- a quiet scrollbar, on every pane that has one ----
+   The platform default is a bright bar on a black panel. */
+.flash-cards .fc-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #2e2e33 transparent;
+}
+
+.flash-cards .fc-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.flash-cards .fc-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.flash-cards .fc-scroll::-webkit-scrollbar-thumb {
+  background: #26262b;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  background-clip: content-box;
+}
+
+.flash-cards .fc-scroll::-webkit-scrollbar-thumb:hover {
+  background: #3a3a42;
+  background-clip: content-box;
+}
+
+/* ===========================================================================
+   Reduced motion, focus
+   ---------------------------------------------------------------------------
+   Every reveal in this app is a class change with a transition layered on top,
+   so switching the motion off loses the movement and nothing else.
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .flash-cards .btn,
+  .flash-cards .opt,
+  .flash-cards .tag-row,
+  .flash-cards .pick,
+  .flash-cards .newitem,
+  .flash-cards .seg button,
+  .flash-cards .ghost-btn,
+  .flash-cards .split__fold,
+  .flash-cards .split__unfold,
+  .flash-cards .notice__x,
+  .flash-cards .meter__fill,
+  .flash-cards .answer,
+  .flash-cards .nav-btn,
+  .flash-cards .side__row,
+  .flash-cards .flip__inner,
+  .flash-cards .hitmiss button,
+  .flash-cards .done__btn {
+    transition: none !important;
+  }
+
+  .flash-cards .opt:hover,
+  .flash-cards .answer:hover,
+  .flash-cards .hitmiss button:hover,
+  .flash-cards .done__btn:hover,
+  .flash-cards .nav-btn:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+.flash-cards a:focus-visible,
+.flash-cards button:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.flash-cards .inp:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 1px;
+}

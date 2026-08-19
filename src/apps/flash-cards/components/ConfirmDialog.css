@@ -1,0 +1,95 @@
+/*
+  The app's only modal. Deleting a topic is the one action here that destroys
+  work in quantity and cannot be undone — every other destructive action gets
+  an undo instead, which is friendlier precisely because it is reversible.
+
+  A native <dialog> rather than a div with a high z-index: it gets the top
+  layer, the backdrop, Escape-to-close and the inert-behind-it for free, and
+  all four are things a hand-rolled overlay gets subtly wrong.
+*/
+.flash-cards-dialog {
+  width: min(420px, calc(100vw - 32px));
+  padding: 22px 24px;
+  border: 1px solid var(--line, #222224);
+  border-radius: 12px;
+  background: #131316;
+  color: #f1f1f1;
+  font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* The dialog sits in the top layer, outside `.flash-cards` — so the tokens it
+   would otherwise inherit do not reach it, and its few colours are literals.
+   That is the trade for the top layer, and it is why this file is short. */
+.flash-cards-dialog::backdrop {
+  background: rgba(4, 4, 4, 0.72);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.flash-cards-dialog h2 {
+  margin: 0 0 10px;
+  font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+  font-weight: 400;
+  font-size: 1.15rem;
+}
+
+.flash-cards-dialog p {
+  margin: 0 0 20px;
+  color: #8f8f93;
+  font-size: 0.88rem;
+}
+
+.flash-cards-dialog b {
+  color: #f1f1f1;
+  font-weight: 400;
+}
+
+.flash-cards-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.flash-cards-dialog__btn {
+  padding: 8px 16px;
+  border: 1px solid #222224;
+  border-radius: 8px;
+  background: transparent;
+  color: #8f8f93;
+  font-family: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.flash-cards-dialog__btn:hover {
+  color: #f1f1f1;
+  border-color: #34343c;
+}
+
+/* The destructive one is the one that is *not* pre-focused, and it says what it
+   deletes rather than "OK". */
+.flash-cards-dialog__btn--danger {
+  border-color: rgba(248, 113, 113, 0.4);
+  background: rgba(248, 113, 113, 0.09);
+  color: #f87171;
+}
+
+.flash-cards-dialog__btn--danger:hover {
+  border-color: #f87171;
+  color: #fff;
+  background: rgba(248, 113, 113, 0.18);
+}
+
+.flash-cards-dialog__btn:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash-cards-dialog__btn {
+    transition: none;
+  }
+}

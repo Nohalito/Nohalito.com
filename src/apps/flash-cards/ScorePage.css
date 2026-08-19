@@ -1,0 +1,202 @@
+/*
+  The score screen. Centred on its own content, because there is exactly one
+  thing to read and no reason to make the eye travel to a corner for it.
+*/
+.flash-cards .done {
+  margin: auto;
+  padding: 40px 30px;
+  max-width: 520px;
+  text-align: center;
+}
+
+.flash-cards .done h1 {
+  margin: 22px 0 8px;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.6rem;
+}
+
+.flash-cards .done > p {
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 0.93rem;
+}
+
+.flash-cards .done__score {
+  margin-bottom: 6px;
+  font-family: var(--font-serif);
+  font-size: 3.2rem;
+  line-height: 1;
+  color: var(--text);
+}
+
+.flash-cards .done__score b {
+  color: var(--purple);
+  font-weight: 400;
+}
+
+.flash-cards .done__of {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #5e5e66;
+}
+
+.flash-cards .done__bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 26px 0;
+  text-align: left;
+}
+
+.flash-cards .done__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.flash-cards .done__bar .meter {
+  flex: 1;
+}
+
+.flash-cards .done__bar b {
+  min-width: 2.4em;
+  color: var(--text);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+  The list of what to look at again. Left-aligned inside a centred block: these
+  are sentences, and a centred ragged column of them is unreadable.
+*/
+.flash-cards .done__missed {
+  margin: 0 0 26px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  text-align: left;
+}
+
+.flash-cards .done__missed h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wrong);
+}
+
+.flash-cards .done__missed ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/*
+  Opened. A ceiling rather than a natural height, because the whole point of
+  opening it is to read a list that does not fit — 40svh keeps the score above
+  and the buttons below on screen with it, and the px cap stops it from
+  becoming the entire page on a tall monitor when there are sixty of them.
+
+  `svh`, not `vh`: on a phone `vh` is the height with the browser chrome
+  retracted, so a box sized against it is taller than what you can actually
+  see until you scroll.
+*/
+.flash-cards .done__missed ul.is-open {
+  max-height: min(40svh, 320px);
+  overflow-y: auto;
+  /* The scrollbar sits in this gutter instead of over the text. */
+  padding-right: 8px;
+}
+
+/* Reads as the end of the list rather than as one more action: the page
+   already has three buttons at the bottom, and this one belongs to the box it
+   is inside, not to "and then what?". */
+.flash-cards .done__more {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 300;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.flash-cards .done__more:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  color: var(--text);
+}
+
+.flash-cards .done__missed a {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  text-decoration: none;
+  border-left: 2px solid var(--wrong-line);
+  padding-left: 10px;
+  transition: color 0.2s ease;
+}
+
+.flash-cards .done__missed a:hover {
+  color: var(--text);
+}
+
+.flash-cards .done__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.flash-cards .done__btn {
+  padding: 10px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.84rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.flash-cards .done__btn:hover {
+  border-color: rgba(139, 92, 246, 0.6);
+  transform: translateY(-2px);
+}
+
+.flash-cards .done__btn--ghost {
+  background: transparent;
+  color: var(--muted);
+}
+
+.flash-cards .done__btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash-cards .done__missed a,
+  .flash-cards .done__more {
+    transition: none;
+  }
+}

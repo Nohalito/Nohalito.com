@@ -165,6 +165,13 @@ export const PROJECTS = {
   ],
 }
 
+/**
+ * `icon` is a key of the ICONS map in SiteFooter — named as a union so a typo
+ * is caught here, where the data is, rather than rendering an empty span.
+ *
+ * @type {{ note: string, links: { label: string, href: string,
+ *   icon: 'github' | 'linkedin' }[] }}
+ */
 export const FOOTER = {
   note: 'Noa Boimond. All rights reserved.',
   links: [

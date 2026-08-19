@@ -1,15 +1,307 @@
 /*
-  This route paints no background of its own: index.css sets `body` to #040404
-  for the whole site, so the browser's default near-black text renders invisible
-  here. The colour is set once on the page root and inherited by everything
-  inside, rather than repeated per element — the scaffold will grow more text,
-  and each new element should not have to remember this.
+  The main app page.
 
-  Scoped to `.flash-cards` rather than declared on `body` in index.css: that file
-  is a deliberate reset, and a global text colour there would be a design
-  decision every future route inherits whether or not it wants it.
+  `min-height` rather than `height`: the page must reach the fold so the footer
+  starts below it, and it must also be free to grow past it once the browser
+  holds more topics than fit on one screen.
 */
-.flash-cards {
-  color: #fff;
-  padding: 48px clamp(24px, 5vw, 44px);
+.flash-cards .entry {
+  min-height: calc(100svh - var(--fc-top-h));
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 40px clamp(24px, 5vw, 44px) 44px;
+}
+
+.flash-cards .entry__brand h1 {
+  margin: 0 0 8px;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 4vw, 2.05rem);
+  line-height: 1.2;
+}
+
+.flash-cards .entry__brand p {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.flash-cards .entry__split {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 26px;
+}
+
+/*
+  `min-width: 0`, not the 290px this used to carry. A flex item refuses to
+  shrink below its min-width, so on a 320px phone the two columns were 290px
+  wide inside a 272px space and the whole page scrolled sideways — the basis is
+  what decides when they wrap, and the minimum was only ever holding the floor
+  after they had. There is nothing left in the column that needs 290px.
+*/
+.flash-cards .entry__col {
+  flex: 1 1 330px;
+  min-width: 0;
+}
+
+.flash-cards .sect__title {
+  margin: 0 0 12px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #5e5e66;
+}
+
+/* ---- a stored topic ----
+   The row is a container, not a button: it holds a link that fills it and a
+   delete beside that. Nesting a button inside a button is invalid HTML, and
+   browsers resolve it by dropping one of them — usually not the one you meant. */
+.flash-cards .tag-row {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 300;
+  text-align: left;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.flash-cards .tag-row + .tag-row,
+.flash-cards .tag-row + .empty,
+.flash-cards .empty + .tag-row {
+  margin-top: 8px;
+}
+
+.flash-cards .tag-row:hover {
+  border-color: rgba(139, 92, 246, 0.45);
+  background: var(--panel-2);
+}
+
+/*
+  Two lines: the name, then everything the app knows about it.
+
+  It used to be one — name, counts, time — three flex items sharing a width.
+  That only works while there is width to share. The counts and the time are
+  both unbreakable strings of a fixed size, so the name is the only item that
+  can give anything up, and by about 380px it had given up all of it: a row
+  reading "…" beside "12 cards · 40 questions". Stacking removes the argument
+  instead of tuning it, and the name gets the full width at every size.
+*/
+.flash-cards .tag-row__open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 11px 16px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.flash-cards .tag-row__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The second line. One strip in one voice — these are two readings of the same
+   thing, and giving each its own size and colour made the row look like it held
+   three unrelated facts. They wrap against each other on a narrow phone, which
+   is the point of putting them in a box of their own. */
+.flash-cards .tag-row__sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  line-height: 1.5;
+  color: #6f6f76;
+}
+
+/* Dimmer than the counts, which is the whole separator: a middot between them
+   would be stranded at the start of a line as soon as the strip wrapped. */
+.flash-cards .tag-row__when {
+  color: #4a4a52;
+}
+
+/* Quiet until the row is hovered or it is focused — it is the destructive
+   control on a list you mostly use for opening things. It never disappears for
+   keyboard users, which is what the `:focus-visible` clause is for. */
+.flash-cards .tag-row__del {
+  flex: none;
+  width: 38px;
+  border: 0;
+  border-left: 1px solid transparent;
+  border-radius: 0 8px 8px 0;
+  background: transparent;
+  color: #3a3a42;
+  font-family: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.flash-cards .tag-row:hover .tag-row__del,
+.flash-cards .tag-row__del:focus-visible {
+  border-left-color: var(--line);
+  color: var(--muted);
+}
+
+.flash-cards .tag-row__del:hover {
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--wrong);
+}
+
+/* The dashed "create" language, shared with the list's own create affordance. */
+.flash-cards .tag-row--new {
+  display: block;
+  margin-top: 8px;
+  padding: 12px 16px;
+  border-style: dashed;
+  border-color: #33333a;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.flash-cards .tag-row--new:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  color: var(--text);
+  background: rgba(139, 92, 246, 0.04);
+}
+
+/* One line of text now that the sample topic is gone — the shared `.empty`
+   already centres it, so the flex column that spaced it against a button would
+   be scaffolding for nothing. */
+.flash-cards .entry .empty p {
+  margin: 0;
+}
+
+/* ---- the create box ---- */
+.flash-cards .createbox {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+.flash-cards .createbox .notice {
+  margin: -4px 0 14px;
+  border: 1px solid var(--wrong-line);
+  border-radius: 8px;
+}
+
+.flash-cards .createbox__opts {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+/* Both options are the same control to look at, because they are the same size
+   of decision. One of them happens to be a <label> wrapping a file input —
+   which is what lets a single click reach the OS file dialog, something no
+   amount of scripting on a <button> is allowed to do. */
+.flash-cards .opt {
+  display: block;
+  width: 100%;
+  padding: 15px 17px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: var(--text);
+  font-family: inherit;
+  font-weight: 300;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.flash-cards .opt:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
+}
+
+/* The hidden input still takes focus, and a focus ring on a 1px box in the
+   corner is invisible. Ringing the label instead puts it where the eye is. */
+.flash-cards .opt:has(input:focus-visible) {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+
+.flash-cards .opt b,
+.flash-cards .opt__label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.96rem;
+  font-weight: 400;
+}
+
+.flash-cards .opt span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.79rem;
+  line-height: 1.55;
+}
+
+/*
+  The create option is a <form>, not a button, because a topic is named before
+  it exists. It keeps the look of its sibling and drops the affordances that
+  claimed the whole box was one click target — the lift on hover most of all,
+  since the real targets are now the field and the button inside it. The border
+  still lights up, on `:focus-within` rather than `:hover`, so the box answers
+  the keyboard the way the other one answers the mouse.
+*/
+.flash-cards .opt--form {
+  cursor: default;
+}
+
+.flash-cards .opt--form:hover {
+  border-color: var(--line);
+  transform: none;
+}
+
+.flash-cards .opt--form:focus-within {
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* Clicking the words "Create a topic" still lands in the field — that is what
+   the `for` attribute buys, and it is why this is a label and not a heading. */
+.flash-cards .opt__label {
+  cursor: pointer;
+}
+
+.flash-cards .opt__row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+/* The field takes the slack and the button keeps its width, so a long topic
+   name grows the input rather than squeezing "Create" into two lines. */
+.flash-cards .opt__row .inp {
+  flex: 1;
+  min-width: 0;
+}
+
+.flash-cards .opt__row .btn {
+  flex: none;
+}
+
+.flash-cards .createbox__note {
+  margin: 13px 0 0;
+  color: #5e5e66;
+  font-size: 0.75rem;
+  line-height: 1.55;
 }

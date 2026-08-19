@@ -1,0 +1,241 @@
+/*
+  The question screen.
+*/
+.flash-cards .qbox {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.flash-cards .qbox__prompt {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.flash-cards .qbox__prompt .q-text {
+  font-size: clamp(1rem, 2vw, 1.22rem);
+}
+
+/*
+  The answer grid is inset against the prompt panel and centred, so the two
+  read as parent and children rather than as two stacked blocks of equal
+  weight. `min()` floors the inset: 3% of a narrow panel is a few pixels, which
+  stops reading as deliberate and starts looking like a rounding error.
+*/
+.flash-cards .qbox__answers {
+  flex: 1;
+  min-height: 0;
+  width: calc(100% - min(3%, 28px));
+  margin: 0 auto;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* "The answers are displayed in mini box in a 2 columns format." */
+.flash-cards .answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 780px) {
+  .flash-cards .answers {
+    grid-template-columns: 1fr;
+  }
+}
+
+.flash-cards .answer {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  height: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.flash-cards .answer:hover:not(:disabled) {
+  border-color: rgba(139, 92, 246, 0.45);
+  transform: translateY(-2px);
+}
+
+.flash-cards .answer:disabled {
+  cursor: default;
+}
+
+.flash-cards .answer__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.flash-cards .answer__key {
+  flex: none;
+  margin-top: 2px;
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: #5e5e66;
+}
+
+.flash-cards .answer__text {
+  flex: 1;
+  white-space: pre-wrap;
+}
+
+/* The verdict mark: glyph, border style and colour — three signals, so the
+   red/green is reinforcement rather than the only channel. */
+.flash-cards .answer__mark {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.55rem;
+}
+
+.flash-cards .answer__verdict {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.flash-cards .answer__explain {
+  display: none;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+/* Revealed — set on the list once any answer is clicked, so one class change
+   turns every box over at once. */
+.flash-cards .answers.is-revealed .answer {
+  transform: none;
+}
+
+.flash-cards .answers.is-revealed .answer__explain,
+.flash-cards .answers.is-revealed .answer__verdict {
+  display: block;
+}
+
+.flash-cards .answers.is-revealed .answer__mark {
+  display: inline-flex;
+}
+
+.flash-cards .answer.is-correct {
+  border-color: var(--correct-line);
+  background: var(--correct-dim);
+}
+
+.flash-cards .answer.is-correct .answer__mark,
+.flash-cards .answer.is-correct .answer__verdict {
+  color: var(--correct);
+}
+
+.flash-cards .answer.is-incorrect {
+  border-style: dashed;
+  border-color: var(--line);
+}
+
+.flash-cards .answer.is-incorrect .answer__mark,
+.flash-cards .answer.is-incorrect .answer__verdict {
+  color: #5e5e66;
+}
+
+/* Only the one you actually picked, if it was wrong, gets the full wrong
+   treatment — the other distractors are merely "not it". */
+.flash-cards .answer.is-picked.is-incorrect {
+  border-color: var(--wrong-line);
+  background: var(--wrong-dim);
+}
+
+.flash-cards .answer.is-picked.is-incorrect .answer__mark,
+.flash-cards .answer.is-picked.is-incorrect .answer__verdict {
+  color: var(--wrong);
+}
+
+.flash-cards .answer.is-picked {
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+/*
+  Ticked on a multi-answer question, not yet submitted.
+
+  Purple rather than the red/green verdict palette, and deliberately so: nothing
+  has been judged yet, and borrowing the verdict colours would report a result
+  the app does not have. The letter picks it up too, so the state survives being
+  read in greyscale — same rule as the verdict marks above.
+
+  Beats the plain `.is-picked` ring below it on specificity (`:not()` takes its
+  argument's), which is why that rule can stay where it is.
+*/
+.flash-cards .answers:not(.is-revealed) .answer.is-picked {
+  border-color: rgba(139, 92, 246, 0.55);
+  background: rgba(139, 92, 246, 0.09);
+  box-shadow: none;
+}
+
+.flash-cards .answers:not(.is-revealed) .answer.is-picked .answer__key {
+  border-color: rgba(139, 92, 246, 0.5);
+  color: var(--purple);
+}
+
+/*
+  The commit row, shown only while a multi-answer question is open. `flex: none`
+  so it keeps its height while the answer grid above takes the scroll, and inset
+  to that grid's width so the two share an edge rather than nearly sharing one.
+*/
+.flash-cards .qbox__commit {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  width: calc(100% - min(3%, 28px));
+  margin: 0 auto;
+}
+
+/* Wraps to its own line before the button does — the button is the shorter of
+   the two and the one whose position should stay predictable. */
+.flash-cards .qbox__wanted {
+  flex: 1 1 18ch;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}

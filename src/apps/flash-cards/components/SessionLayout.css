@@ -1,0 +1,369 @@
+/*
+  The frame shared by the two study screens and the score screen: a progress
+  panel on the left, the work on the right.
+
+  The stage fills exactly what is left of the first screenful, so the footer
+  starts one pixel below the fold — the README's "scrolling down reveals the
+  footer", the same rule the topic page follows.
+
+  `height`, not `min-height`, for the reason TopicPage.css gives about its own
+  panes: `overflow-y: auto` on a box whose height is only a minimum never
+  fires. `flex: 1` resolves against a container that is free to grow, so the
+  box sizes to its content and the stage grows with it. A topic with forty
+  questions made the rail taller than the screen that way, and since both
+  columns stretch to the taller one, the work column inherited that height and
+  spread its contents down the page — the visible symptom being a widening gap
+  above the ← → row, which is the space the answer grid took on the way. The
+  height has to be definite for either column to scroll at all.
+*/
+.flash-cards .stage {
+  display: flex;
+  height: calc(100svh - var(--fc-top-h));
+}
+
+/* ===========================================================================
+   The progress panel
+   ---------------------------------------------------------------------------
+   Specified for both study pages: "a left panel that indicates the progression
+   by highlighting the one checked". On the score page it lists the same items
+   with their verdicts and highlights none of them — nothing is in progress
+   there, so a current row would imply a cursor that does not exist.
+   =========================================================================== */
+.flash-cards .side {
+  flex: none;
+  width: 250px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
+  background: rgba(9, 9, 9, 0.55);
+}
+
+.flash-cards .side__head {
+  flex: none;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.flash-cards .side__title {
+  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #5e5e66;
+}
+
+/* The meter is the only progress readout — there is no "x / y" line under the
+   list — so it gets a little more presence than a hairline. */
+.flash-cards .side__head .meter {
+  height: 3px;
+}
+
+.flash-cards .side__list {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 10px;
+  list-style: none;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* One row = one card or question. State is carried by a left edge, a glyph and
+   text weight — three signals, so "which one am I on" survives any palette and
+   any way of seeing colour. */
+.flash-cards .side__row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  border-left: 2px solid var(--line);
+  border-radius: 0 5px 5px 0;
+  background: transparent;
+  color: #6f6f76;
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 300;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.flash-cards .side__row:hover {
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.flash-cards .side__row.is-done {
+  color: var(--muted);
+  border-left-color: #3a3a40;
+}
+
+.flash-cards .side__row.is-current {
+  color: var(--text);
+  border-left-color: var(--purple);
+  background: rgba(139, 92, 246, 0.07);
+}
+
+.flash-cards .side__num {
+  flex: none;
+  min-width: 1.4em;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.flash-cards .side__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flash-cards .side__mark {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.5rem;
+  opacity: 0;
+}
+
+.flash-cards .side__row.is-done .side__mark {
+  opacity: 1;
+}
+
+.flash-cards .side__row.is-right .side__mark {
+  color: var(--correct);
+  opacity: 1;
+}
+
+.flash-cards .side__row.is-wrong .side__mark {
+  color: var(--wrong);
+  opacity: 1;
+  border-style: dashed;
+}
+
+/* ===========================================================================
+   The stage
+   =========================================================================== */
+.flash-cards .main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px clamp(14px, 2.2vw, 24px) 18px;
+  /*
+    The two study screens fit by construction — their inner column shrinks and
+    the scroll happens further in, at the answer grid or the card face. The
+    score screen does not: it is as long as its missed list, and a stage with a
+    definite height would clip it. So the overflow stops here instead — see
+    `.main--centred` for what centring that content then costs.
+  */
+  overflow-y: auto;
+}
+
+/*
+  ⚠️ `safe` is load-bearing, and `margin: auto` on `.done` is not a substitute
+  for it. Auto margins absorb free space only while it is positive; once the
+  content is taller than the box they resolve to zero and plain `center` takes
+  over, distributing the *negative* free space equally. Half of it goes above
+  the item — which puts the top of the block before the scroll origin, where no
+  scrollbar can reach it. A session with a dozen misses did precisely that: the
+  buttons at the bottom were reachable and the score at the top was not.
+
+  `safe` says "centre while it fits, align to the start when it does not". A
+  browser that does not know the keyword drops the whole declaration and falls
+  back to start alignment, which is the same answer by a different route — so
+  this is the rare case where the fallback is also the fix.
+*/
+.flash-cards .main--centred {
+  align-items: safe center;
+  justify-content: safe center;
+}
+
+.flash-cards .main__inner {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.flash-cards .face-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #55555c;
+}
+
+.flash-cards .q-text {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.flash-cards .a-text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+/* ---- navigation: ← (x out of y) → , specified for both study pages ---- */
+.flash-cards .nav-row {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.flash-cards .nav-btn {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.flash-cards .nav-btn:hover:not(:disabled) {
+  border-color: rgba(139, 92, 246, 0.55);
+  color: var(--text);
+  transform: translateY(-2px);
+}
+
+.flash-cards .nav-btn:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.flash-cards .nav-count {
+  min-width: 8.5em;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.flash-cards .nav-row .btn {
+  margin-left: 6px;
+}
+
+/* A hint, not a manual: the shortcuts exist whether or not it is read. */
+.flash-cards .key-hint {
+  flex: none;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #45454c;
+}
+
+/*
+  ---- the phone layout ----
+  A 250px rail beside a readable card does not fit under about 860px. The panel
+  becomes a horizontal strip above the work instead of a drawer behind a
+  button: its whole job here is "which one am I on, how many left", and a strip
+  answers that without a tap. The labels go — they are what needed the width —
+  and the number and the verdict mark stay, which is what was being read.
+*/
+@media (max-width: 860px) {
+  /* Back to a minimum here, as the topic page also does at this width. The
+     rail is a horizontal strip in this layout, so it has no way to outgrow the
+     screen and there is nothing to bound; meanwhile a short landscape phone is
+     better served by a card that pushes the page than by one squeezed into
+     whatever is left of it. */
+  .flash-cards .stage {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100svh - var(--fc-top-h));
+  }
+
+  .flash-cards .side {
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding-right: 10px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .flash-cards .side__head {
+    flex: none;
+    width: 96px;
+    padding: 10px 12px;
+    border-bottom: 0;
+    border-right: 1px solid var(--line);
+  }
+
+  .flash-cards .side__title {
+    margin: 0 0 6px;
+    font-size: 0.55rem;
+  }
+
+  .flash-cards .side__list {
+    flex-direction: row;
+    padding: 8px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .flash-cards .side__row {
+    flex: none;
+    justify-content: center;
+    min-width: 44px;
+    padding: 6px 8px;
+    border-left: 0;
+    border-bottom: 2px solid var(--line);
+    border-radius: 5px 5px 0 0;
+  }
+
+  .flash-cards .side__row.is-done {
+    border-bottom-color: #3a3a40;
+  }
+
+  .flash-cards .side__row.is-current {
+    border-bottom-color: var(--purple);
+  }
+
+  .flash-cards .side__label {
+    display: none;
+  }
+}

@@ -10,7 +10,7 @@
   /* Vertical padding in `rem`, horizontal in px: the vertical is half of what
      `--header-h` adds up to, so it has to move with the type scale or anchor
      offsets drift; the horizontal is page margin and answers to the viewport. */
-  padding: 1.25rem clamp(24px, 5vw, 44px);
+  padding: 1rem clamp(24px, 5vw, 44px);
 
   background: rgba(4, 4, 4, 0.6);
   backdrop-filter: blur(10px);
@@ -80,7 +80,15 @@
   .site-header {
     flex-direction: column;
     align-items: flex-start;
-    /* Counted into the stacked `--header-h`, so it scales with the rest. */
-    gap: 0.75rem;
+    /*
+      Counted into the stacked `--header-h`, so it scales with the rest — and
+      the reason Home.css moved by the same 0.5rem when this did.
+
+      Small because it is not the only space between the two rows: both lines
+      inherit `line-height: 1.7`, which already puts about 0.4rem of leading
+      under the brand and over the nav. The old 0.75rem sat on top of that and
+      read as a paragraph break rather than as two halves of one bar.
+    */
+    gap: 0.25rem;
   }
 }

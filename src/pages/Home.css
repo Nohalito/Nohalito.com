@@ -104,20 +104,10 @@
 /* ---------- shared utilities ---------- */
 
 /*
-  Visible to screen readers, invisible on screen. Used for the footer link
-  labels, whose icons are decorative and carry no accessible name of their own.
+  `.visually-hidden` used to be declared here, scoped to `.home`. It moved to
+  index.css when the flash-cards app started rendering SiteFooter outside this
+  page — a page-scoped rule cannot serve a component that travels between pages.
 */
-.home .visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  border: 0;
-  clip-path: inset(50%);
-}
 
 /* Keyboard focus must stay visible against a dark, moving background. */
 .home a:focus-visible {
@@ -133,9 +123,15 @@
   cannot be used in media query conditions, so without a preprocessor the number
   has to be written twice. Change one, change the other.
 
-  6.5rem is the column layout: 1.25rem padding twice, the 1.125rem brand and the
-  0.75rem nav both at `line-height: 1.7` (1.9rem and 1.28rem), the 0.75rem gap
-  between them, and the 1px border.
+  6rem is the column layout: 1rem padding twice, the 1.125rem brand and the
+  0.75rem nav both at `line-height: 1.7` (1.9rem and 1.28rem), the 0.25rem gap
+  between them, and the 1px border — about 5.44rem. The remainder is clearance,
+  so a section heading lands clear of the bar rather than touching it.
+
+  It came down from 6.5rem when that gap came down from 0.75rem, one for one:
+  the clearance is the same as it always was, and only the header got shorter.
+  ⚠️ Note the padding is 1rem, not the 1.25rem this note used to claim and the
+  desktop value above still assumes — that one is a further 0.5rem generous.
 
   This assumes the nav stays on one line, which it does down to ~310px — the
   three labels plus their gaps come to roughly 258px, against 272px of content
@@ -146,6 +142,6 @@
 */
 @media (max-width: 560px) {
   .home {
-    --header-h: 6.5rem;
+    --header-h: 6rem;
   }
 }

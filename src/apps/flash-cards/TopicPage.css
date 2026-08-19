@@ -1,0 +1,557 @@
+/*
+  The topic page: two panes.
+
+  `height` rather than `min-height`, and the height is exactly what puts the
+  footer at the fold. It has to be definite: two panes that scroll
+  independently need a height to scroll *within*, and `min-height: 0` on both
+  is the prerequisite — a flex child otherwise refuses to shrink below its
+  content and pushes the page taller instead of scrolling.
+
+  The consequence is that the footer is reached by scrolling a pane to its end
+  and letting the scroll chain out to the document. That is the browser default
+  and it works, but it is the one place the README's footer rule is served
+  indirectly: do not add `overscroll-behavior: contain` to these panes without
+  replacing it with something.
+*/
+.flash-cards .page {
+  display: flex;
+  height: calc(100svh - var(--fc-top-h));
+}
+
+/*
+  ⚠️ `min-width: 0` is what stops this pane from being wider than the screen.
+
+  A flex item's automatic minimum size is its *min-content* width, not zero, and
+  it will happily exceed both its own `width` and its container to reach it. The
+  head below is what set that floor: `.seg` is `flex: none` and holds three
+  unbreakable uppercase pills, so the pane could not be narrower than about
+  310px however small the phone was. It overflowed the viewport, and — since the
+  page is a flex row — took the width the body pane should have had, which is
+  why the list looked like it had swallowed the detail rather than merely spilled
+  over it. `width: 330px` was never the number in charge.
+*/
+.flash-cards .split__list {
+  flex: none;
+  width: 330px;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
+  background: rgba(9, 9, 9, 0.55);
+}
+
+/* The head holds the filter and the create button, and nothing else. Import
+   and export belong to the topic rather than to the list, and at 330px they
+   crowded the three filter pills — so they live on the topic bar.
+
+   It wraps, which is the other half of the fix above: with `min-width: 0` alone
+   the pane would shrink and the head would spill out of it instead. Wrapping
+   moves the floor down to the wider of its two halves — the filter, at about
+   215px — which fits every phone there is. */
+.flash-cards .split__head {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 13px;
+  border-bottom: 1px solid var(--line);
+}
+
+.flash-cards .split__head-acts {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---- collapsing the pane ----
+   Two halves of one control, and they are two elements because the pane is
+   unmounted rather than hidden: there is nothing left to hang a button inside
+   when it is gone. Both are chevrons and nothing else — a control that appears
+   only on the layout where the rail costs you room does not need a label
+   competing with the filter beside it. */
+.flash-cards .split__fold {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: transparent;
+  color: #5e5e66;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.flash-cards .split__fold:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  color: var(--text);
+}
+
+/* A full-height strip where the pane was, so the way back is in the place the
+   pane left rather than somewhere the eye has to look for it. */
+.flash-cards .split__unfold {
+  flex: none;
+  width: 28px;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: rgba(9, 9, 9, 0.55);
+  color: #5e5e66;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.flash-cards .split__unfold:hover {
+  background: rgba(139, 92, 246, 0.07);
+  color: var(--text);
+}
+
+.flash-cards .split__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 11px;
+}
+
+.flash-cards .split__undo {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 13px;
+  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+/* `.split__foot` held Start studying and Start test and is gone with them —
+   they are on the topic bar now, where a control that acts on the whole topic
+   belongs and where the pane being collapsed cannot take them away. Its
+   `flex: 1 1 auto` on the two buttons went too; the bar wraps them instead. */
+
+/* It used to lean on the foot above it for its top padding and its border. On
+   its own now, so it draws both itself. */
+.flash-cards .split__shuffle {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 13px;
+  border-top: 1px solid var(--line);
+  background: rgba(4, 4, 4, 0.5);
+  color: #6f6f76;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.flash-cards .split__shuffle input {
+  accent-color: var(--purple);
+  cursor: pointer;
+}
+
+.flash-cards .split__body {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 22px clamp(16px, 2.6vw, 30px) 30px;
+}
+
+.flash-cards .split__body-inner {
+  max-width: 720px;
+}
+
+.flash-cards .split__back {
+  margin-bottom: 16px;
+}
+
+/* ---- the left list ---- */
+.flash-cards .picks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.flash-cards .pick {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid transparent;
+  border-left: 2px solid var(--line);
+  border-radius: 0 7px 7px 0;
+  background: transparent;
+  color: #6f6f76;
+  font-family: inherit;
+  font-size: 0.79rem;
+  font-weight: 300;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.flash-cards .pick:hover {
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.flash-cards .pick.is-on {
+  color: var(--text);
+  border-left-color: var(--purple);
+  background: rgba(139, 92, 246, 0.07);
+}
+
+.flash-cards .pick__text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- the detail pane ---- */
+.flash-cards .detail__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.flash-cards .detail h3 {
+  margin: 0 0 14px;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+.flash-cards .detail__label {
+  margin: 0 0 5px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #5e5e66;
+}
+
+.flash-cards .detail__body {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  /* Authored text is plain, so its own line breaks are the only structure it
+     has. Collapsing them would turn a written list into a paragraph. */
+  white-space: pre-wrap;
+}
+
+/* The correct answer is marked by a green edge *and* the word "Correct" —
+   colour accelerates, words carry. */
+.flash-cards .detail__ans {
+  margin: 0 0 9px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--line);
+  border-radius: 0 8px 8px 0;
+  background: var(--panel);
+}
+
+.flash-cards .detail__ans.is-correct {
+  border-left-color: var(--correct-line);
+}
+
+.flash-cards .detail__ans-top {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  color: var(--text);
+  font-size: 0.86rem;
+}
+
+.flash-cards .detail__ans-n {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: #5e5e66;
+}
+
+.flash-cards .detail__ans.is-correct .detail__ans-n {
+  color: var(--correct);
+}
+
+.flash-cards .detail__ans-why {
+  margin: 6px 0 0 22px;
+  color: #6f6f76;
+  font-size: 0.79rem;
+  line-height: 1.55;
+}
+
+.flash-cards .detail__acts {
+  display: flex;
+  gap: 9px;
+  margin-top: 22px;
+}
+
+/* This menu opens upward. The actions sit at the end of the content and the
+   detail pane is a scroller — a popover dropping downward from the last row is
+   clipped by the pane's own bottom edge exactly when the item was long enough
+   to need scrolling. Left-aligned for the same reason: it hangs off a button in
+   the middle of a row, not off the pane's edge. */
+.flash-cards .detail__acts .menu__pop {
+  top: auto;
+  bottom: calc(100% + 6px);
+  left: 0;
+  right: auto;
+}
+
+/* ===========================================================================
+   The create / edit form
+   ---------------------------------------------------------------------------
+   One form for both jobs, mounting in the detail pane — which is the reason
+   this layout was chosen. A question with six answer/explanation pairs needs
+   the width, and it gets it here without displacing the list you are working
+   through.
+   =========================================================================== */
+.flash-cards .form {
+  padding: 16px;
+  border: 1px solid rgba(139, 92, 246, 0.38);
+  border-radius: 10px;
+  background: var(--panel-2);
+}
+
+.flash-cards .form__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.flash-cards .form__title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--purple);
+}
+
+.flash-cards .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 13px;
+}
+
+.flash-cards .field > span {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6f6f76;
+}
+
+/* Only appears within 200 characters of the cap: a counter that is always
+   there reads as a target to fill rather than a limit to notice. */
+.flash-cards .field__count {
+  font-style: normal;
+  color: var(--purple);
+}
+
+/* `.inp` used to live here, and moved to AppFrame.css when the main page grew
+   a text field of its own — this stylesheet is only loaded on the topic page,
+   so the field would have arrived unstyled. Its `:focus-visible` rule was
+   already over there, which is the sign it had become furniture. */
+
+.flash-cards .pairs {
+  margin-bottom: 12px;
+}
+
+.flash-cards .pairs__head {
+  display: grid;
+  grid-template-columns: 26px 1fr 1fr 30px;
+  gap: 9px;
+  margin-bottom: 7px;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #5e5e66;
+}
+
+.flash-cards .pair {
+  display: grid;
+  grid-template-columns: 26px 1fr 1fr 30px;
+  gap: 9px;
+  align-items: start;
+  margin-bottom: 9px;
+}
+
+.flash-cards .pick-ok {
+  width: 24px;
+  height: 24px;
+  margin-top: 6px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: #4a4a52;
+  font-family: inherit;
+  font-size: 0.62rem;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.flash-cards .pick-ok:hover {
+  border-color: #3a3a42;
+  color: var(--muted);
+}
+
+.flash-cards .pick-ok[aria-pressed='true'] {
+  color: var(--correct);
+  border-color: var(--correct-line);
+  background: rgba(74, 222, 128, 0.08);
+}
+
+.flash-cards .pair__x {
+  width: 24px;
+  height: 24px;
+  margin-top: 6px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #4a4a52;
+  font-family: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.flash-cards .pair__x:hover {
+  color: var(--wrong);
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+.flash-cards .pair__x[disabled] {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+/* Why this cannot be saved yet, next to the button that refused. */
+.flash-cards .form__error {
+  margin: 0 0 12px;
+  padding: 8px 11px;
+  border: 1px solid var(--wrong-line);
+  border-radius: 7px;
+  background: var(--wrong-dim);
+  color: var(--text);
+  font-size: 0.78rem;
+}
+
+.flash-cards .form__leave {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 9px 11px;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 7px;
+  background: rgba(139, 92, 246, 0.08);
+  font-size: 0.78rem;
+}
+
+.flash-cards .form__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 13px;
+  border-top: 1px solid var(--line);
+}
+
+.flash-cards .form__count {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: #5e5e66;
+}
+
+.flash-cards .form__actions {
+  display: flex;
+  gap: 9px;
+}
+
+/*
+  Below this width the two panes stop being two panes and become a drill-down:
+  the list, then one item, with a way back. The alternative — a 330px rail
+  beside a 200px form — is two halves that neither work.
+
+  The rendering side of this lives in the component (`useMediaQuery`), because
+  hiding a pane in CSS leaves a form inside it still holding focus and still
+  reachable by Tab.
+*/
+@media (max-width: 860px) {
+  .flash-cards .page {
+    height: auto;
+    min-height: calc(100svh - var(--fc-top-h));
+  }
+
+  .flash-cards .split__list {
+    width: auto;
+    flex: 1;
+    border-right: 0;
+  }
+
+  .flash-cards .split__body {
+    overflow: visible;
+  }
+
+  .flash-cards .pairs__head {
+    display: none;
+  }
+
+  /*
+    Three columns instead of four, and the explanation moves *below* its answer
+    rather than beside it. Every cell is placed explicitly: auto-placement would
+    put the explanation in the delete button's column, which is a 30px box, and
+    then flow the delete button onto a row of its own.
+  */
+  .flash-cards .pair {
+    grid-template-columns: 26px 1fr 30px;
+  }
+
+  .flash-cards .pair > .pick-ok {
+    grid-area: 1 / 1;
+  }
+
+  .flash-cards .pair > textarea:nth-of-type(1) {
+    grid-area: 1 / 2;
+  }
+
+  .flash-cards .pair > .pair__x {
+    grid-area: 1 / 3;
+  }
+
+  .flash-cards .pair > textarea:nth-of-type(2) {
+    grid-area: 2 / 2;
+  }
+}

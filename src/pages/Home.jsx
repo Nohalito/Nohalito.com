@@ -5,6 +5,7 @@ import Pane from '../components/Pane'
 import AboutSection from '../components/home/AboutSection'
 import ExperienceSection from '../components/home/ExperienceSection'
 import ProjectsSection from '../components/home/ProjectsSection'
+import { useHashScroll } from '../hooks/useHashScroll'
 import { BRAND, EXPERIENCE, FOOTER, PROFILE, PROJECTS, SECTIONS } from './homeContent'
 import './Home.css'
 
@@ -27,6 +28,10 @@ import './Home.css'
  * run JS. Unmounting removes it and the fallback surfaces again.
  */
 export default function Home() {
+  /* The hosted apps link back here as `/home#about`. Without this the fragment
+     arrives and nothing moves — see the hook. */
+  useHashScroll()
+
   return (
     <div className="home">
 
