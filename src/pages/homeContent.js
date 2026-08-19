@@ -138,30 +138,21 @@ export const EXPERIENCE = {
 
 export const PROJECTS = {
   title: 'Projects',
-  intro: "An archive of all the Leg-... projects I made or participated in.",
+  intro: "An archive of all the Lego-... projects I made or participated in.",
   items: [
     {
       id: 'black-hole',
       title: 'Black Hole',
       description:
-        'An absorbing ThreeJs animation to serve as this website background',
+        'I kinda fumbled into ThreeJs library randomly, and I also like space objects like black hole',
       to: '/black-hole-test',
     },
     {
       id: 'flash-cards',
       title: 'Flash Cards',
-      description: '!!! Underconstruction !!! \n I might or not build it.',
-      // Internal route: rendered as a router Link, no full page reload.
+      description: 'Just a flash card web app that I used to study the GCP PDE certification while on public transport',
       to: '/flash-cards',
     },
-    // {
-    //   id: 'qr-code-generator',
-    //   title: 'QR Code Generator',
-    //   description: 'Placeholder description.',
-    //   // No route wired up yet, so the card renders without a link rather than
-    //   // pointing somewhere broken.
-    //   status: 'In progress',
-    // },
   ],
 }
 
