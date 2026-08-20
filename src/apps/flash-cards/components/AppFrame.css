@@ -112,6 +112,36 @@
   position: static;
 }
 
+/*
+  On a phone the two bars together are the stacked site header and the topic bar
+  — around 140px of a ~660px viewport, a fifth of the screen permanently spent
+  on a wordmark and a name you read once. On a session that fifth is coming out
+  of the card. So below 860px they stop being pinned: they are there when you
+  arrive, and one flick puts them away for as long as the run lasts.
+
+  Only on a session, and `:has()` is how that is asked. The condition is already
+  in the DOM — `topic-bar--session` is set on exactly the screens that are a run
+  — so the alternative is a prop threaded through AppFrame to restate what the
+  markup says. The topic page keeps its sticky bar: the buttons in it *are* the
+  screen, and losing them to a scroll would be losing the controls.
+
+  ⚠️ `relative`, not `static`, and not by preference. Unsetting `position`
+  unsets `z-index` with it, and a non-positioned block paints *below* the
+  positioned `.fc-bg` above — whose second gradient is opaque. The bars would
+  scroll away by vanishing under the background. `relative` with no offsets
+  scrolls identically and keeps the `z-index: 10` from the rule above in force.
+
+  `--fc-top-h` needs nothing: it is measured, and the stage still sizes itself to
+  fit under the bars at rest, so scrolling past them hands it the whole viewport.
+  A browser without `:has()` drops the rule and keeps the sticky bars — which is
+  the behaviour being replaced, not a broken one.
+*/
+@media (max-width: 860px) {
+  .flash-cards .fc-top:has(.topic-bar--session) {
+    position: relative;
+  }
+}
+
 .flash-cards .fc-main {
   position: relative;
   z-index: 1;
